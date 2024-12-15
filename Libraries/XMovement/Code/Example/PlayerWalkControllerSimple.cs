@@ -7,7 +7,8 @@ public partial class PlayerWalkControllerSimple : Component
 	[RequireComponent] public PlayerMovement Controller { get; set; }
 	[RequireComponent] public CitizenAnimationHelper AnimationHelper { get; set; }
 	[Property] public SkinnedModelRenderer ModelRenderer { get; set; }
-	[Property] public GameObject Head { get; set; }
+	[Property, Group( "Head" )] public GameObject Head { get; set; }
+	[Property, Group( "Head" )] public float HeadHeight { get; set; } = 64f;
 
 	/// <summary>
 	/// How quickly does the player move by default?
@@ -153,8 +154,13 @@ public partial class PlayerWalkControllerSimple : Component
 				var vel = delvel - new Vector3( 0, 0, (delta * WorldScale.z) / Time.Delta );
 				Controller.MoveBy( vel, true );
 			}
+			LastSmoothEyeHeight = _smoothEyeHeight;
 		}
-		if ( Head.IsValid() ) Head.WorldRotation = EyeAngles.ToRotation();
+		if ( Head.IsValid() )
+		{
+			Head.WorldRotation = EyeAngles.ToRotation();
+			Head.LocalPosition = new Vector3( 0, 0, HeadHeight + _smoothEyeHeight );
+		}
 	}
 	protected float GetEyeHeightOffset()
 	{
@@ -177,5 +183,6 @@ public partial class PlayerWalkControllerSimple : Component
 		AnimationHelper.WithVelocity( Controller.Velocity );
 		AnimationHelper.IsGrounded = Controller.IsOnGround;
 		AnimationHelper.WithLook( EyeAngles.Forward * 100, 1, 1, 1.0f );
+		AnimationHelper.DuckLevel = IsCrouching ? 100 : 0;
 	}
 }
