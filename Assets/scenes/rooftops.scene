@@ -1117,7 +1117,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1154,7 +1154,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1191,7 +1191,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1412,7 +1412,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1448,7 +1448,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1520,7 +1520,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1592,7 +1592,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1629,7 +1629,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1666,7 +1666,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
@@ -1703,7 +1703,7 @@
           "Center": "0,0,0",
           "IsTrigger": false,
           "Scale": "50,50,50",
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]
