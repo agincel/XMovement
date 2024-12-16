@@ -44,22 +44,26 @@ public partial class PlayerMovement : Component
 	/// <summary>
 	/// Move a character, with this velocity
 	/// </summary>
-	public void Move()
+	public void Move( bool withWishVelocity = true, bool withGravity = true )
 	{
 		ApplyAcceleration();
 		UpdateSimulatedShadow();
-		if ( IsOnGround )
+
+		if ( withWishVelocity )
 		{
-			Accelerate( WishVelocity );
-		}
-		else
-		{
-			Accelerate( WishVelocity.ClampLength( AirControl ) );
+			if ( IsOnGround )
+			{
+				Accelerate( WishVelocity );
+			}
+			else
+			{
+				Accelerate( WishVelocity.ClampLength( AirControl ) );
+			}
 		}
 
 		Velocity = ApplyFriction( Velocity, GetFriction(), 100 );
 
-		if ( !IsOnGround )
+		if ( !IsOnGround && withGravity )
 			Velocity -= Gravity * Time.Delta * 1f;
 
 		if ( TryUnstuck() )

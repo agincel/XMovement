@@ -23,6 +23,7 @@ public partial class PlayerWalkControllerComplex : Component
 	/// Do we want to jump next movement update?
 	/// </summary>
 	public bool WantsJump { get; set; }
+	public Vector3 WishMove { get; private set; }
 
 	public void DoMovement()
 	{
@@ -33,7 +34,16 @@ public partial class PlayerWalkControllerComplex : Component
 
 		if ( Controller.IsOnGround && WantsJump ) Jump();
 
-		Controller.Move();
+		CheckLadder();
+
+		if ( IsTouchingLadder )
+		{
+			LadderMove();
+		}
+		else
+		{
+			Controller.Move();
+		}
 
 		ResetFrameInput();
 
@@ -78,9 +88,11 @@ public partial class PlayerWalkControllerComplex : Component
 
 	public void BuildWishVelocity()
 	{
+		WishMove = Input.AnalogMove;
+
 		var rot = EyeAngles.WithPitch( 0f ).ToRotation();
 
-		var wishDirection = Input.AnalogMove.Normal * rot;
+		var wishDirection = WishMove.Normal * rot;
 		wishDirection = wishDirection.WithZ( 0 );
 
 		Controller.WishVelocity = wishDirection * GetWishSpeed();
