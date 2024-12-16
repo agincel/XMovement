@@ -49,14 +49,21 @@ public partial class PlayerWalkControllerSimple : Component
 	protected override void OnUpdate()
 	{
 		base.OnUpdate();
-		DoEyeLook();
-		BuildFrameInput();
-		if ( Controller.MovementFrequency == PlayerMovement.MovementFrequencyMode.PerUpdate ) DoMovement();
+		if ( !IsProxy )
+		{
+			DoEyeLook();
+			BuildFrameInput();
+			if ( Controller.MovementFrequency == PlayerMovement.MovementFrequencyMode.PerUpdate ) DoMovement();
+		}
 	}
 
 	protected override void OnFixedUpdate()
 	{
-		if ( Controller.MovementFrequency == PlayerMovement.MovementFrequencyMode.PerFixedUpdate ) DoMovement();
+		if ( !IsProxy )
+		{
+			if ( Controller.MovementFrequency == PlayerMovement.MovementFrequencyMode.PerFixedUpdate ) DoMovement();
+		}
+		Animate();
 	}
 
 	public void DoMovement()

@@ -17,6 +17,7 @@ public partial class PlayerMovement : Component
 	void CreateShadowObjects()
 	{
 		if ( !PhysicsIntegration ) return;
+		if ( IsProxy ) return;
 
 		var pair = new CollisionRules.Pair( "movement", "movement" );
 
@@ -30,11 +31,13 @@ public partial class PlayerMovement : Component
 		shadow.SetParent( GameObject );
 		shadow.Name = "PhysicsShadow";
 		shadow.Tags.Add( "movement" );
+		shadow.NetworkMode = NetworkMode.Object;
 
 		var body = Scene.CreateObject();
 		body.SetParent( GameObject );
 		body.Name = "PhysicsBody";
 		body.Tags.Add( "movement" );
+		body.NetworkMode = NetworkMode.Object;
 
 
 		PhysicsBodyRigidbody = body.Components.GetOrCreate<Rigidbody>();
@@ -42,21 +45,27 @@ public partial class PlayerMovement : Component
 		PhysicsBodyRigidbody.Gravity = false;
 		PhysicsBodyRigidbody.Locking = new PhysicsLock() { Pitch = true, Roll = true };
 		PhysicsBodyCollider = body.Components.GetOrCreate<BoxCollider>();
+		PhysicsBodyCollider.Scale = BoundingBox.Maxs + BoundingBox.Mins.Abs();
+		PhysicsBodyCollider.Center = BoundingBox.Center;
 
 		PhysicsShadowRigidbody = shadow.Components.GetOrCreate<Rigidbody>();
 		PhysicsShadowRigidbody.MassOverride = Mass;
 		PhysicsShadowRigidbody.Locking = new PhysicsLock() { Pitch = true, Yaw = true, Roll = true };
 		PhysicsShadowCollider = shadow.Components.GetOrCreate<BoxCollider>();
+		PhysicsShadowCollider.Scale = BoundingBox.Maxs + BoundingBox.Mins.Abs();
+		PhysicsShadowCollider.Center = BoundingBox.Center;
 
 		var surf = Surface.FindByName( "xmove_phys" );
 
 		PhysicsBodyCollider.Surface = surf;
 		PhysicsShadowCollider.Surface = surf;
 
-
+		shadow.NetworkSpawn();
+		body.NetworkSpawn();
 	}
 	void UpdateSimulatedShadow()
 	{
+		if ( IsProxy ) return;
 		if ( !PhysicsIntegration ) return;
 		var shvel = Velocity * 1f;
 		var whvel = WishVelocity * 1f;

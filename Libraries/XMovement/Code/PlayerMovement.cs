@@ -28,7 +28,7 @@ public partial class PlayerMovement : Component
 		PerFixedUpdate,
 		PerUpdate
 	}
-	public Vector3 WishVelocity { get; set; }
+	[Sync] public Vector3 WishVelocity { get; set; }
 	protected override void OnStart()
 	{
 		base.OnStart();
