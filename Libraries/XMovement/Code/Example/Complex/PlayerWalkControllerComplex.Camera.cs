@@ -25,7 +25,7 @@ public partial class PlayerWalkControllerComplex : Component
 
 
 	[Property, Group( "Camera" ), ShowIf( "CameraMode", CameraModes.ThirdPerson ), Change( "SetupCamera" )]
-	public Vector3 ThirdPersonOffset { get; set; } = new Vector3( -300, 0, 0 );
+	public Vector3 ThirdPersonOffset { get; set; } = new Vector3( -180, 0, 0 );
 
 	public void SetupCamera()
 	{

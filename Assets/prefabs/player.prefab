@@ -8,6 +8,9 @@
       {
         "__type": "XMovement.PlayerWalkControllerComplex",
         "__guid": "19ac7684-4641-48ee-b617-8e266cf12238",
+        "AllowPogosticking": false,
+        "AltSpeed": 320,
+        "AltSpeedAction": "Run",
         "Body": {
           "_type": "gameobject",
           "go": "6d99b4fd-950b-4dfd-aac3-f44792cb1300"
@@ -25,18 +28,25 @@
           "component_type": "CameraComponent"
         },
         "CameraMode": "ThirdPerson",
+        "ClimbSpeed": 100,
+        "CrouchAction": "Duck",
         "CrouchSpeed": 80,
+        "DefaultSpeed": 180,
+        "EnableAltSpeed": true,
+        "EnableCrouching": true,
+        "EnableJumping": true,
+        "EnableLadders": true,
         "FirstPersonOffset": "0,0,0",
         "Head": {
           "_type": "gameobject",
           "go": "6005e47b-ec48-4df3-a7a7-f8fbf5a99579"
         },
         "HeadHeight": 64,
+        "JumpAction": "Jump",
         "JumpPower": 268.32816,
+        "LadderTag": "ladder",
         "PlayerShadowsOnly": true,
-        "RunSpeed": 320,
-        "ThirdPersonOffset": "-300,0,0",
-        "WalkSpeed": 120
+        "ThirdPersonOffset": "-300,0,0"
       },
       {
         "__type": "XMovement.PlayerMovement",

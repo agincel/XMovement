@@ -3,11 +3,15 @@ namespace XMovement;
 
 public partial class PlayerWalkControllerComplex : Component
 {
+	[Property, FeatureEnabled( "Ladders" )] public bool EnableLadders { get; set; } = true;
+	[Property, Feature( "Ladders" )] public float ClimbSpeed { get; set; } = 100.0f;
+	[Property, Feature( "Ladders" )] public string LadderTag { get; set; } = "ladder";
 	bool IsTouchingLadder = false;
 	Vector3 LadderNormal;
 
 	public virtual void CheckLadder()
 	{
+		if ( !EnableLadders ) { IsTouchingLadder = false; return; }
 		var wishvel = new Vector3( WishMove.x.Clamp( -1f, 1f ), WishMove.y.Clamp( -1f, 1f ), 0 );
 		wishvel *= EyeAngles.WithPitch( 0 ).ToRotation();
 		wishvel = wishvel.Normal;
@@ -16,7 +20,7 @@ public partial class PlayerWalkControllerComplex : Component
 		{
 			if ( Input.Pressed( "jump" ) )
 			{
-				Controller.Velocity = LadderNormal * 100.0f;
+				Controller.Velocity = LadderNormal * ClimbSpeed;
 				IsTouchingLadder = false;
 
 				return;
@@ -36,7 +40,7 @@ public partial class PlayerWalkControllerComplex : Component
 
 		var pm = Scene.Trace.Ray( start, end )
 					.Size( Controller.BoundingBox.Mins, Controller.BoundingBox.Maxs )
-					.WithTag( "ladder" )
+					.WithTag( LadderTag )
 					.IgnoreGameObjectHierarchy( GameObject )
 					.Run();
 

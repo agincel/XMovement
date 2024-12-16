@@ -6,18 +6,55 @@ public partial class PlayerWalkControllerComplex : Component
 	/// <summary>
 	/// How quickly does the player move by default?
 	/// </summary>
-	[Property, Group( "Config" )] public float RunSpeed { get; set; } = 320.0f;
-	[Property, Group( "Config" )] public float WalkSpeed { get; set; } = 120.0f;
-	[Property, Group( "Config" )] public float CrouchSpeed { get; set; } = 80.0f;
+	[Property, Group( "Config" )] public float DefaultSpeed { get; set; } = 180.0f;
 
+	[Property, FeatureEnabled( "Running" )] public bool EnableRunning { get; set; } = true;
+	/// <summary>
+	/// The Input Action that the alternate speed mode is triggered by.
+	/// </summary>
+	[Property, InputAction, Feature( "Running" )] public string RunAction { get; set; } = "Run";
+	/// <summary>
+	/// The speed the player moves at while in the alternate speed mode.
+	/// </summary>
+	[Property, Feature( "Running" )] public float RunSpeed { get; set; } = 320.0f;
+	[Sync] public bool IsRunning { get; set; }
+
+	[Property, FeatureEnabled( "Walking" )] public bool EnableWalking { get; set; } = true;
+	/// <summary>
+	/// The Input Action that the alternate speed mode is triggered by.
+	/// </summary>
+	[Property, InputAction, Feature( "Walking" )] public string WalkAction { get; set; } = "Walk";
+	/// <summary>
+	/// The speed the player moves at while in the alternate speed mode.
+	/// </summary>
+	[Property, Feature( "Walking" )] public float WalkSpeed { get; set; } = 120.0f;
+	[Sync] public bool IsWalking { get; set; }
+
+	[Property, FeatureEnabled( "Crouching" )] public bool EnableCrouching { get; set; } = true;
+
+	/// <summary>
+	/// The Input Action that crouching is triggered by.
+	/// </summary>
+	[Property, InputAction, Feature( "Crouching" )] public string CrouchAction { get; set; } = "Duck";
+	/// <summary>
+	/// The speed the player moves at while crouching.
+	/// </summary>
+	[Property, Feature( "Crouching" )] public float CrouchSpeed { get; set; } = 80.0f;
+	[Sync] public bool IsCrouching { get; set; }
+
+	[Property, FeatureEnabled( "Jumping" )] public bool EnableJumping { get; set; } = true;
+	/// <summary>
+	/// The Input Action that jumping is triggered by.
+	/// </summary>
+	[Property, InputAction, Feature( "Jumping" )] public string JumpAction { get; set; } = "Jump";
+	/// <summary>
+	/// Can the player hold down jump to repeatedly jump?
+	/// </summary>
+	[Property, Feature( "Jumping" )] public bool AllowPogosticking { get; set; } = false;
 	/// <summary>
 	/// How powerful is the player's jump?
 	/// </summary>
-	[Property, Group( "Config" )] public float JumpPower { get; set; } = 268.3281572999747f;
-
-	[Sync] public bool IsCrouching { get; set; }
-
-	[Sync] public bool IsSlowWalking { get; set; }
+	[Property, Feature( "Jumping" )] public float JumpPower { get; set; } = 268.3281572999747f;
 
 	/// <summary>
 	/// Do we want to jump next movement update?
@@ -32,7 +69,7 @@ public partial class PlayerWalkControllerComplex : Component
 		BuildWishVelocity();
 		BuildInput();
 
-		if ( Controller.IsOnGround && WantsJump ) Jump();
+		if ( Controller.IsOnGround && WantsJump && EnableJumping ) Jump();
 
 		CheckLadder();
 
@@ -67,7 +104,8 @@ public partial class PlayerWalkControllerComplex : Component
 
 	private void BuildFrameInput()
 	{
-		if ( Input.Pressed( "Jump" ) ) WantsJump = true;
+		if ( AllowPogosticking && Input.Down( JumpAction ) ) WantsJump = true;
+		else if ( Input.Pressed( JumpAction ) ) WantsJump = true;
 	}
 	private void ResetFrameInput()
 	{
@@ -75,15 +113,17 @@ public partial class PlayerWalkControllerComplex : Component
 	}
 	private void BuildInput()
 	{
-		IsSlowWalking = Input.Down( "Run" );
-		IsCrouching = Input.Down( "Duck" ) || !CanUncrouch();
+		IsRunning = Input.Down( RunAction ) && EnableRunning;
+		IsWalking = Input.Down( WalkAction ) && EnableWalking;
+		IsCrouching = Input.Down( CrouchAction ) || !CanUncrouch();
 	}
 
 	protected float GetWishSpeed()
 	{
 		if ( IsCrouching ) return CrouchSpeed;
-		if ( IsSlowWalking ) return WalkSpeed;
-		return RunSpeed;
+		if ( IsRunning ) return RunSpeed;
+		if ( IsWalking ) return WalkSpeed;
+		return DefaultSpeed;
 	}
 
 	public void BuildWishVelocity()
