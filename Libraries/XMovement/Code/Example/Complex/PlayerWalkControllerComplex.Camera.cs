@@ -27,6 +27,9 @@ public partial class PlayerWalkControllerComplex : Component
 	[Property, Group( "Camera" ), ShowIf( "CameraMode", CameraModes.ThirdPerson ), Change( "SetupCamera" )]
 	public Vector3 ThirdPersonOffset { get; set; } = new Vector3( -180, 0, 0 );
 
+	[Property, InputAction, Group( "Camera" )]
+	public string CameraToggleAction { get; set; } = "View";
+
 	public void SetupCamera()
 	{
 		if ( CameraMode != CameraModes.Manual && !Camera.IsValid() )
@@ -64,6 +67,11 @@ public partial class PlayerWalkControllerComplex : Component
 			var tr = Scene.Trace.Ray( start, end ).IgnoreDynamic().Run();
 			fraction = tr.Fraction;
 			Camera.LocalPosition = ThirdPersonOffset * fraction;
+		}
+		if ( Input.Pressed( CameraToggleAction ) )
+		{
+			if ( CameraMode == CameraModes.ThirdPerson ) CameraMode = CameraModes.FirstPerson;
+			else if ( CameraMode == CameraModes.FirstPerson ) CameraMode = CameraModes.ThirdPerson;
 		}
 	}
 }
