@@ -19,6 +19,11 @@ public partial class PlayerWalkControllerComplex : Component
 		}
 	}
 
+	/// <summary>
+	/// Constructs a ray using the camera's GameObject
+	/// </summary>
+	public virtual Ray AimRay => new( Head.WorldPosition + Camera.WorldRotation.Forward, Camera.WorldRotation.Forward );
+
 	protected void SetupHead()
 	{
 		if ( !Head.IsValid() )
