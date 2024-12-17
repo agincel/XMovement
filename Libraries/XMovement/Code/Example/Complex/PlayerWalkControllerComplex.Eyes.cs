@@ -34,7 +34,7 @@ public partial class PlayerWalkControllerComplex : Component
 			PositionHead();
 		}
 	}
-	protected void PositionHead()
+	protected virtual void PositionHead()
 	{
 		if ( Head.IsValid() )
 		{
@@ -45,7 +45,7 @@ public partial class PlayerWalkControllerComplex : Component
 
 	private float _smoothEyeHeight;
 	float LastSmoothEyeHeight = 0;
-	public void DoEyeLook()
+	public virtual void DoEyeLook()
 	{
 		if ( !IsProxy )
 		{
