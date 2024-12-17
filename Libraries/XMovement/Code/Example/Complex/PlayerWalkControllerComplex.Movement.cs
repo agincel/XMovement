@@ -93,6 +93,8 @@ public partial class PlayerWalkControllerComplex : Component
 
 		ResetFrameInput();
 
+		LadderLatchCheck();
+
 		Animate();
 	}
 

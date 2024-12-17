@@ -46,6 +46,7 @@ public partial class PlayerMovement : Component
 	public bool IsOnGround { get; set; }
 
 	public GameObject GroundObject { get; set; }
+	public GameObject PreviousGroundObject { get; set; }
 	public Collider GroundCollider { get; set; }
 
 	protected override void DrawGizmos()
@@ -209,6 +210,8 @@ public partial class PlayerMovement : Component
 		//
 		// we are on ground
 		//
+		PreviousGroundObject = GroundObject;
+
 		IsOnGround = true;
 		GroundObject = pm.GameObject;
 		GroundCollider = pm.Shape?.Collider as Collider;
@@ -233,6 +236,7 @@ public partial class PlayerMovement : Component
 
 	public void ClearGround()
 	{
+		PreviousGroundObject = GroundObject;
 		IsOnGround = false;
 		GroundObject = default;
 		GroundCollider = default;
