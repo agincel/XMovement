@@ -5,6 +5,7 @@ public partial class PlayerWalkControllerComplex : Component
 {
 	[Property, Group( "Head" )] public GameObject Head { get; set; }
 	[Property, Group( "Head" )] public float HeadHeight { get; set; } = 64f;
+	[Property, Group( "Config" )] public float Height { get; set; } = 72f;
 	[Sync] public Angles LocalEyeAngles { get; set; }
 	public Angles EyeAngles
 	{
@@ -45,7 +46,7 @@ public partial class PlayerWalkControllerComplex : Component
 		{
 			var eyeHeightOffset = GetEyeHeightOffset();
 			_smoothEyeHeight = _smoothEyeHeight.LerpTo( eyeHeightOffset, Time.Delta * 10f );
-			Controller.Height = 72 + _smoothEyeHeight;
+			Controller.Height = Height + _smoothEyeHeight;
 
 			LocalEyeAngles += Input.AnalogLook;
 			LocalEyeAngles = LocalEyeAngles.WithPitch( LocalEyeAngles.pitch.Clamp( -89f, 89f ) );

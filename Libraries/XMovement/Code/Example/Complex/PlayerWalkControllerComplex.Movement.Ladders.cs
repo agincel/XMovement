@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 namespace XMovement;
 
 public partial class PlayerWalkControllerComplex : Component
@@ -20,7 +21,17 @@ public partial class PlayerWalkControllerComplex : Component
 		{
 			if ( Input.Pressed( "jump" ) )
 			{
-				Controller.Velocity = LadderNormal * ClimbSpeed;
+				var sidem = (Math.Abs( Head.WorldRotation.Forward.Abs().z - 1 ) * 3).Clamp( 0, 1 );
+				var upm = Head.WorldRotation.Forward.z;
+
+				var Eject = new Vector3();
+
+				Eject.x = LadderNormal.x * sidem;
+				Eject.y = LadderNormal.y * sidem;
+				Eject.z = (3 * upm).Clamp( 0, 1 );
+
+				Controller.Velocity += (Eject * 180.0f) * WorldScale;
+
 				IsTouchingLadder = false;
 
 				return;

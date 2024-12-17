@@ -69,13 +69,18 @@ public partial class PlayerWalkControllerComplex : Component
 		BuildWishVelocity();
 		BuildInput();
 
-		if ( Controller.IsOnGround && WantsJump && EnableJumping ) Jump();
+		if ( Controller.IsOnGround && WantsJump && CanJump() ) Jump();
 
+		CheckWater();
 		CheckLadder();
 
 		if ( IsTouchingLadder )
 		{
 			LadderMove();
+		}
+		else if ( IsSwimming )
+		{
+			SwimMove();
 		}
 		else
 		{
@@ -138,6 +143,12 @@ public partial class PlayerWalkControllerComplex : Component
 		Controller.WishVelocity = wishDirection * GetWishSpeed();
 	}
 
+	private bool CanJump()
+	{
+		if ( !EnableJumping ) return false;
+		if ( IsSwimming ) return false;
+		return true;
+	}
 	private bool CanUncrouch()
 	{
 		var b = Controller.Height;

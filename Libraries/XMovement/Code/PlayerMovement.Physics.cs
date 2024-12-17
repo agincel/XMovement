@@ -96,7 +96,7 @@ public partial class PlayerMovement : Component
 		return velocity * newspeed;
 	}
 
-	SceneTrace BuildTrace( Vector3 from, Vector3 to, float liftFeet = 0.0f )
+	public SceneTrace BuildTrace( Vector3 from, Vector3 to, float liftFeet = 0.0f )
 	{
 		var box = BoundingBox;
 		if ( liftFeet > 0 )

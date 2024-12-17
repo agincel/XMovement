@@ -44,7 +44,7 @@ public partial class PlayerMovement : Component
 	/// <summary>
 	/// Move a character, with this velocity
 	/// </summary>
-	public void Move( bool withWishVelocity = true, bool withGravity = true )
+	public void Move( bool withWishVelocity = true, bool withGravity = true, float frictionOverride = 0 )
 	{
 		ApplyAcceleration();
 		UpdateSimulatedShadow();
@@ -61,7 +61,14 @@ public partial class PlayerMovement : Component
 			}
 		}
 
-		Velocity = ApplyFriction( Velocity, GetFriction(), 100 );
+		if ( frictionOverride > 0 )
+		{
+			Velocity = ApplyFriction( Velocity, frictionOverride, 100 );
+		}
+		else
+		{
+			Velocity = ApplyFriction( Velocity, GetFriction(), 100 );
+		}
 
 		if ( !IsOnGround && withGravity )
 			Velocity -= Gravity * Time.Delta * 1f;
