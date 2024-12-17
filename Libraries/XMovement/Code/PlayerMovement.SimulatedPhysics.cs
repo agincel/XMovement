@@ -118,7 +118,7 @@ public partial class PlayerMovement : Component
 		{
 			BaseVelocity = vel;// * Time.Delta;   
 		}
-		if ( IsStuck() )
+		if ( IsStuck() && PhysicsBodyRigidbody.WorldPosition != Vector3.Zero )
 		{
 			WorldPosition = PhysicsBodyRigidbody.WorldPosition;
 		}

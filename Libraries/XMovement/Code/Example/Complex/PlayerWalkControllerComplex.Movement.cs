@@ -66,7 +66,7 @@ public partial class PlayerWalkControllerComplex : Component
 	public bool WantsJump { get; set; }
 	public Vector3 WishMove { get; private set; }
 
-	public void DoMovement()
+	public virtual void DoMovement()
 	{
 		Controller.PrepareMovement();
 
