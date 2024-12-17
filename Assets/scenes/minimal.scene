@@ -282,7 +282,6 @@
       "__guid": "073e4cac-c7a1-44cd-8e00-333110cf4624",
       "Flags": 0,
       "Name": "Object",
-      "Enabled": true,
       "Components": [
         {
           "__type": "Sandbox.NetworkHelper",
@@ -293,6 +292,179 @@
           },
           "SpawnPoints": [],
           "StartServer": true
+        }
+      ]
+    },
+    {
+      "__guid": "7cfacb1a-72e1-41ce-98a3-bff0d1ff0b2b",
+      "Flags": 0,
+      "Name": "Object",
+      "Position": "-138.0923,25.83578,39.6021",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "XMovement.PlayerWalkControllerComplex",
+          "__guid": "1ede782a-990f-46bf-9f50-56a2c9944341",
+          "AllowPogosticking": false,
+          "Body": {
+            "_type": "gameobject",
+            "go": "df7f0195-68e0-480f-a999-5cc1056fd9b6"
+          },
+          "BodyModelRenderer": {
+            "_type": "component",
+            "component_id": "06a4e644-7aee-4efc-8174-3649675bdd21",
+            "go": "df7f0195-68e0-480f-a999-5cc1056fd9b6",
+            "component_type": "SkinnedModelRenderer"
+          },
+          "Camera": {
+            "_type": "component",
+            "component_id": "f8751b14-6842-4cd9-84b6-6d7024d42a8c",
+            "go": "72dcbb9b-3ec5-43a3-8f65-a3afe1cd8104",
+            "component_type": "CameraComponent"
+          },
+          "CameraMode": "ThirdPerson",
+          "CameraToggleAction": "View",
+          "ClimbSpeed": 100,
+          "CrouchAction": "Duck",
+          "CrouchSpeed": 80,
+          "DefaultSpeed": 180,
+          "EnableCrouching": true,
+          "EnableJumping": true,
+          "EnableLadders": true,
+          "EnableRunning": true,
+          "EnableSwimming": true,
+          "EnableWalking": true,
+          "FirstPersonOffset": "0,0,0",
+          "Head": {
+            "_type": "gameobject",
+            "go": "cec5b9c6-fac6-4881-9855-ce709744db8e"
+          },
+          "HeadHeight": 64,
+          "Height": 72,
+          "JumpAction": "Jump",
+          "JumpPower": 268.32816,
+          "LadderTag": "ladder",
+          "MovementPreset": "None",
+          "PlayerShadowsOnly": true,
+          "RunAction": "Run",
+          "RunByDefault": false,
+          "RunSpeed": 320,
+          "SwimDownAction": "",
+          "SwimmingFriction": 1,
+          "SwimmingSpeedScale": 0.8,
+          "SwimUpAction": "Jump",
+          "ThirdPersonOffset": "-180,0,0",
+          "WalkAction": "Walk",
+          "WalkSpeed": 120,
+          "WaterTag": "water"
+        },
+        {
+          "__type": "XMovement.PlayerMovement",
+          "__guid": "4838a596-b87a-435b-88d8-aa8904f7083f",
+          "Acceleration": 10,
+          "AirAcceleration": 50,
+          "AirControl": 30,
+          "BaseAcceleration": 10,
+          "BaseFriction": 4,
+          "Bounciness": 0,
+          "Gravity": "0,0,800",
+          "GroundAngle": 46,
+          "Height": 72,
+          "IgnoreLayers": "",
+          "Mass": 85,
+          "MovementFrequency": "PerFixedUpdate",
+          "PhysicsIntegration": true,
+          "Radius": 16,
+          "StepHeight": 18,
+          "UseCollisionRules": false
+        },
+        {
+          "__type": "Sandbox.Citizen.CitizenAnimationHelper",
+          "__guid": "2fcfa667-23fc-42b8-97ab-48c5c29cce28",
+          "BodyWeight": 1,
+          "EyesWeight": 1,
+          "HeadWeight": 1,
+          "LookAtEnabled": false,
+          "Target": {
+            "_type": "component",
+            "component_id": "06a4e644-7aee-4efc-8174-3649675bdd21",
+            "go": "df7f0195-68e0-480f-a999-5cc1056fd9b6",
+            "component_type": "SkinnedModelRenderer"
+          }
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "df7f0195-68e0-480f-a999-5cc1056fd9b6",
+          "Flags": 0,
+          "Name": "Body",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.SkinnedModelRenderer",
+              "__guid": "06a4e644-7aee-4efc-8174-3649675bdd21",
+              "BodyGroups": 341,
+              "CreateAttachments": false,
+              "CreateBoneObjects": false,
+              "Model": "models/citizen/citizen.vmdl",
+              "Morphs": {},
+              "Parameters": {
+                "bools": {},
+                "ints": {},
+                "floats": {},
+                "vectors": {},
+                "rotations": {}
+              },
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
+              "RenderType": "On",
+              "Sequence": {
+                "Name": null
+              },
+              "Tint": "1,1,1,1",
+              "UseAnimGraph": true
+            }
+          ]
+        },
+        {
+          "__guid": "cec5b9c6-fac6-4881-9855-ce709744db8e",
+          "Flags": 0,
+          "Name": "Head",
+          "Position": "0,0,64",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "72dcbb9b-3ec5-43a3-8f65-a3afe1cd8104",
+              "Flags": 0,
+              "Name": "Camera",
+              "Position": "-180,0,0",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.CameraComponent",
+                  "__guid": "f8751b14-6842-4cd9-84b6-6d7024d42a8c",
+                  "__enabled": false,
+                  "BackgroundColor": "0.33333,0.46275,0.52157,1",
+                  "ClearFlags": "All",
+                  "FieldOfView": 60,
+                  "IsMainCamera": true,
+                  "Orthographic": false,
+                  "OrthographicHeight": 1204,
+                  "Priority": 1,
+                  "RenderExcludeTags": "",
+                  "RenderTags": "",
+                  "TargetEye": "None",
+                  "Viewport": "0,0,1,1",
+                  "ZFar": 10000,
+                  "ZNear": 10
+                }
+              ]
+            }
+          ]
         }
       ]
     }

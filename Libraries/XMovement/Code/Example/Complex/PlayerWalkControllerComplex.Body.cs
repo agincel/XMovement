@@ -24,7 +24,7 @@ public partial class PlayerWalkControllerComplex : Component
 			AnimationHelper.Target = BodyModelRenderer;
 		}
 	}
-	public void Animate()
+	public virtual void Animate()
 	{
 		var rotateDifference = 0f;
 
