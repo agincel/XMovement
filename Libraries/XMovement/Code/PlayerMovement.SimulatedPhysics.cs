@@ -69,6 +69,8 @@ public partial class PlayerMovement : Component
 		if ( !PhysicsIntegration ) return;
 		if ( !PhysicsBodyRigidbody.IsValid() ) return;
 		if ( !PhysicsShadowRigidbody.IsValid() ) return;
+		if ( !PhysicsBodyRigidbody.Enabled ) return;
+		if ( !PhysicsShadowRigidbody.Enabled ) return;
 		var shvel = Velocity * 1f;
 		var whvel = WishVelocity * 1f;
 
@@ -91,6 +93,8 @@ public partial class PlayerMovement : Component
 		if ( !PhysicsIntegration ) return;
 		if ( !PhysicsBodyRigidbody.IsValid() ) return;
 		if ( !PhysicsShadowRigidbody.IsValid() ) return;
+		if ( !PhysicsBodyRigidbody.Enabled ) return;
+		if ( !PhysicsShadowRigidbody.Enabled ) return;
 		// We do this so we don't slide down things and off ledges on static geometry or as soon as we land.
 		bool OnDynamicGeometry = true;
 		if ( (GroundObject.IsValid() &&

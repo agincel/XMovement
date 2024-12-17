@@ -100,6 +100,7 @@ public partial class PlayerWalkControllerComplex : Component
 		AnimationHelper.IsGrounded = Controller.IsOnGround || IsTouchingLadder;
 		AnimationHelper.IsClimbing = IsTouchingLadder;
 		AnimationHelper.IsSwimming = IsSwimming;
+		AnimationHelper.IsNoclipping = IsNoclipping;
 
 		if ( timeSinceRotationSpeedUpdate > 0.1f )
 		{

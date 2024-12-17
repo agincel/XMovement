@@ -77,8 +77,13 @@ public partial class PlayerWalkControllerComplex : Component
 
 		CheckWater();
 		CheckLadder();
+		CheckNoclip();
 
-		if ( IsTouchingLadder )
+		if ( IsNoclipping )
+		{
+			DoNoclipMove();
+		}
+		else if ( IsTouchingLadder )
 		{
 			LadderMove();
 		}
