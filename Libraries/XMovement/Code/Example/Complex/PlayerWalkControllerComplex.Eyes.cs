@@ -54,7 +54,7 @@ public partial class PlayerWalkControllerComplex : Component
 			_smoothEyeHeight = _smoothEyeHeight.LerpTo( eyeHeightOffset, Time.Delta * 10f );
 			Controller.Height = Height + _smoothEyeHeight;
 
-			LocalEyeAngles += Input.AnalogLook;
+			LocalEyeAngles += Input.AnalogLook * AimSensitivityScale;
 			LocalEyeAngles = LocalEyeAngles.WithPitch( LocalEyeAngles.pitch.Clamp( -89f, 89f ) );
 
 			// This moves our feet up when crouching in air
