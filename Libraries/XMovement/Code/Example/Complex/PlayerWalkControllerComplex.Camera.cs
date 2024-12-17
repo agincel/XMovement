@@ -30,8 +30,10 @@ public partial class PlayerWalkControllerComplex : Component
 	[Property, InputAction, Group( "Camera" )]
 	public string CameraToggleAction { get; set; } = "View";
 
+	public virtual void OnCameraModeChanged() { }
 	public void SetupCamera()
 	{
+		OnCameraModeChanged();
 		if ( CameraMode != CameraModes.Manual && !Camera.IsValid() )
 		{
 			var cameraobj = Scene.CreateObject();
@@ -43,13 +45,21 @@ public partial class PlayerWalkControllerComplex : Component
 		if ( CameraMode == CameraModes.FirstPerson )
 		{
 			Camera.LocalPosition = FirstPersonOffset;
-			BodyModelRenderer.RenderType = PlayerShadowsOnly ? Sandbox.ModelRenderer.ShadowRenderType.ShadowsOnly : Sandbox.ModelRenderer.ShadowRenderType.On;
+			foreach ( var mdlrenderer in Body.Components.GetAll<ModelRenderer>( FindMode.EverythingInSelfAndChildren ) )
+			{
+				mdlrenderer.RenderType = PlayerShadowsOnly ? Sandbox.ModelRenderer.ShadowRenderType.ShadowsOnly : Sandbox.ModelRenderer.ShadowRenderType.On;
+			}
 		}
 		if ( CameraMode == CameraModes.ThirdPerson )
 		{
 			Camera.LocalPosition = ThirdPersonOffset;
 			if ( BodyModelRenderer.RenderType == Sandbox.ModelRenderer.ShadowRenderType.ShadowsOnly && PlayerShadowsOnly )
-				BodyModelRenderer.RenderType = Sandbox.ModelRenderer.ShadowRenderType.On;
+			{
+				foreach ( var mdlrenderer in Body.Components.GetAll<ModelRenderer>( FindMode.EverythingInSelfAndChildren ) )
+				{
+					mdlrenderer.RenderType = Sandbox.ModelRenderer.ShadowRenderType.On;
+				}
+			}
 		}
 		if ( !IsProxy && Game.IsPlaying )
 		{
