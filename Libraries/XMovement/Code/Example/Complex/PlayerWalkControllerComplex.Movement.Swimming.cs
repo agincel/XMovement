@@ -11,10 +11,6 @@ public partial class PlayerWalkControllerComplex : Component
 	[Property, InputAction, Feature( "Swimming" )] public string SwimDownAction { get; set; } = "";
 	private bool IsSwimming => WaterLevel > 0.5f;
 	float WaterLevel = 0;
-	private void SwimmingSetup()
-	{
-		Controller.IgnoreLayers.Set( WaterTag, true );
-	}
 	public virtual void CheckWater()
 	{
 		if ( !EnableSwimming ) { WaterLevel = 0; return; }
@@ -25,6 +21,7 @@ public partial class PlayerWalkControllerComplex : Component
 		var pm = Scene.Trace.Ray( start, end )
 					.Size( Controller.BoundingBox.Mins, Controller.BoundingBox.Maxs )
 					.WithTag( WaterTag )
+					.HitTriggers()
 					.IgnoreGameObjectHierarchy( GameObject )
 					.Run();
 		WaterLevel = 1 - pm.Fraction;

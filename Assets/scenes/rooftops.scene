@@ -3624,7 +3624,7 @@
           "Collision": "Mesh",
           "Color": "1,1,1,1",
           "HideInGame": false,
-          "IsTrigger": false,
+          "IsTrigger": true,
           "Mesh": {
             "Topology": "H4sIAAAAAAAACl2QCQ7CMAwEp4Qj3NBy/f\u002BlaMRGsohUVbFn1\u002Bt04ANs\u002BZ0VsM69AwfgBFyAKZ9MPXdgk3qLnsI\u002BUm/h/me9i2ZXfFvYOazafTJN0XRgKZmPyWtfXvYVL73PZRd52WdYPa7xtC8veys7u6t17/7t6Tn0ZtFjvIXZR895zjKjPWf4NiOrGt\u002BivpXZ3XnozaOndVn9vvVkkTjEAQAA",
             "Positions": [
@@ -3734,7 +3734,7 @@
             ]
           },
           "SmoothingAngle": 40,
-          "Static": false,
+          "Static": true,
           "SurfaceVelocity": "0,0,0"
         }
       ]

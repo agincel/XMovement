@@ -14,6 +14,10 @@ public partial class PlayerWalkControllerComplex : Component
 	/// </summary>
 	[Property, InputAction, Feature( "Running" )] public string RunAction { get; set; } = "Run";
 	/// <summary>
+	/// If the player should run by default, pressing the run action will swap to default speed
+	/// </summary>
+	[Property, Feature( "Running" )] public bool RunByDefault { get; set; } = false;
+	/// <summary>
 	/// The speed the player moves at while in the alternate speed mode.
 	/// </summary>
 	[Property, Feature( "Running" )] public float RunSpeed { get; set; } = 320.0f;
@@ -118,7 +122,11 @@ public partial class PlayerWalkControllerComplex : Component
 	}
 	private void BuildInput()
 	{
-		IsRunning = Input.Down( RunAction ) && EnableRunning;
+		if ( RunByDefault )
+			IsRunning = !Input.Down( RunAction ) && EnableRunning;
+		else
+			IsRunning = Input.Down( RunAction ) && EnableRunning;
+
 		IsWalking = Input.Down( WalkAction ) && EnableWalking;
 		IsCrouching = Input.Down( CrouchAction ) || !CanUncrouch();
 	}
