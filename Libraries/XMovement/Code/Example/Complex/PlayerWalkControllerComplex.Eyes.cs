@@ -44,6 +44,7 @@ public partial class PlayerWalkControllerComplex : Component
 	}
 
 	private float _smoothEyeHeight;
+	public float AimSensitivityScale = 1.0f;
 	float LastSmoothEyeHeight = 0;
 	public virtual void DoEyeLook()
 	{
