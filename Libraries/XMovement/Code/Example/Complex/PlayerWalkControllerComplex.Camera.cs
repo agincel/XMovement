@@ -53,4 +53,17 @@ public partial class PlayerWalkControllerComplex : Component
 			Camera.Enabled = true;
 		}
 	}
+
+	public void UpdateCamera()
+	{
+		if ( CameraMode == CameraModes.ThirdPerson )
+		{
+			var fraction = 1f;
+			var start = Head.WorldPosition;
+			var end = Head.WorldPosition + (ThirdPersonOffset * Head.WorldRotation);
+			var tr = Scene.Trace.Ray( start, end ).IgnoreDynamic().Run();
+			fraction = tr.Fraction;
+			Camera.LocalPosition = ThirdPersonOffset * fraction;
+		}
+	}
 }

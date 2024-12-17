@@ -22,6 +22,7 @@ public partial class PlayerWalkControllerComplex : Component, Component.ExecuteI
 
 		if ( !IsProxy )
 		{
+			UpdateCamera();
 			DoEyeLook();
 			BuildFrameInput();
 			if ( Controller.MovementFrequency == PlayerMovement.MovementFrequencyMode.PerUpdate ) DoMovement();
