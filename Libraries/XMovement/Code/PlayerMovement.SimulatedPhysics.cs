@@ -44,6 +44,7 @@ public partial class PlayerMovement : Component
 		PhysicsBodyRigidbody.MassOverride = Mass;
 		PhysicsBodyRigidbody.Gravity = false;
 		PhysicsBodyRigidbody.Locking = new PhysicsLock() { Pitch = true, Roll = true };
+		PhysicsBodyRigidbody.RigidbodyFlags = RigidbodyFlags.DisableCollisionSounds;
 		PhysicsBodyCollider = body.Components.GetOrCreate<BoxCollider>();
 		PhysicsBodyCollider.Scale = BoundingBox.Maxs + BoundingBox.Mins.Abs();
 		PhysicsBodyCollider.Center = BoundingBox.Center;
@@ -51,6 +52,7 @@ public partial class PlayerMovement : Component
 		PhysicsShadowRigidbody = shadow.Components.GetOrCreate<Rigidbody>();
 		PhysicsShadowRigidbody.MassOverride = Mass;
 		PhysicsShadowRigidbody.Locking = new PhysicsLock() { Pitch = true, Yaw = true, Roll = true };
+		PhysicsShadowRigidbody.RigidbodyFlags = RigidbodyFlags.DisableCollisionSounds;
 		PhysicsShadowCollider = shadow.Components.GetOrCreate<BoxCollider>();
 		PhysicsShadowCollider.Scale = BoundingBox.Maxs + BoundingBox.Mins.Abs();
 		PhysicsShadowCollider.Center = BoundingBox.Center;
