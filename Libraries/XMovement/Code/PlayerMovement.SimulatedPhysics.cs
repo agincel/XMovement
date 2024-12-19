@@ -10,6 +10,7 @@ public partial class PlayerMovement : Component
 	[ConVar] public static bool debug_playermovement { get; set; } = false;
 	[Property, FeatureEnabled( "Physics Integration" )] public bool PhysicsIntegration { get; set; } = true;
 	[Property, Feature( "Physics Integration" )] public float Mass { get; set; } = 85;
+	[Property, Feature( "Physics Integration" )] public float PushScale { get; set; } = 0.7f;
 
 	public Rigidbody PhysicsShadowRigidbody;
 	public BoxCollider PhysicsShadowCollider;
@@ -79,7 +80,7 @@ public partial class PlayerMovement : Component
 		if ( !PhysicsBodyRigidbody.Enabled ) return;
 		if ( !PhysicsShadowRigidbody.Enabled ) return;
 		var shvel = Velocity * 1f;
-		var whvel = WishVelocity * 1f;
+		var whvel = WishVelocity * PushScale;
 
 		shvel.x = MathF.MaxMagnitude( shvel.x, whvel.x );
 		shvel.y = MathF.MaxMagnitude( shvel.y, whvel.y );

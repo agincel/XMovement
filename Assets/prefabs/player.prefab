@@ -26,6 +26,7 @@
           "component_type": "CameraComponent"
         },
         "CameraMode": "ThirdPerson",
+        "CameraToggleAction": "View",
         "ClimbSpeed": 100,
         "CrouchAction": "Duck",
         "CrouchSpeed": 80,
@@ -49,6 +50,7 @@
         "LadderTag": "ladder",
         "MovementPreset": "None",
         "NoclipAction": "Noclip",
+        "OnlyAllowHost": false,
         "PlayerShadowsOnly": true,
         "RotationAngleLimit": 0,
         "RotationFaceLadders": false,
@@ -73,17 +75,20 @@
         "AirControl": 30,
         "BaseAcceleration": 10,
         "BaseFriction": 4,
+        "BaseVelocity": "0,0,0",
         "Bounciness": 0,
         "Gravity": "0,0,800",
         "GroundAngle": 46,
         "Height": 72,
         "IgnoreLayers": "water",
+        "IsOnGround": false,
         "Mass": 85,
         "MovementFrequency": "PerFixedUpdate",
         "PhysicsIntegration": true,
         "Radius": 16,
         "StepHeight": 18,
-        "UseCollisionRules": false
+        "UseCollisionRules": false,
+        "Velocity": "0,0,0"
       },
       {
         "__type": "Sandbox.Citizen.CitizenAnimationHelper",
