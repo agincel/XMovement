@@ -38,7 +38,7 @@ public partial class PlayerMovement : Component
 
 	public void PrepareMovement()
 	{
-		ResetSimulatedShadow();
+		UpdateFromSimulatedShadow();
 	}
 
 	/// <summary>
@@ -47,7 +47,6 @@ public partial class PlayerMovement : Component
 	public void Move( bool withWishVelocity = true, bool withGravity = true, float frictionOverride = 0 )
 	{
 		ApplyAcceleration();
-		UpdateSimulatedShadow();
 
 		if ( withWishVelocity )
 		{
@@ -86,6 +85,8 @@ public partial class PlayerMovement : Component
 		}
 
 		CategorizePosition();
+		ResetSimulatedShadow();
+		PreviousPosition = WorldPosition;
 	}
 
 	private void ApplyAcceleration()

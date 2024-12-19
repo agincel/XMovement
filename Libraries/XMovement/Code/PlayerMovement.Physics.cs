@@ -45,6 +45,8 @@ public partial class PlayerMovement : Component
 	[ReadOnly, Property, Sync]
 	public bool IsOnGround { get; set; }
 
+	public Vector3 PreviousPosition { get; set; }
+
 	public GameObject GroundObject { get; set; }
 	public GameObject PreviousGroundObject { get; set; }
 	public Collider GroundCollider { get; set; }
@@ -160,7 +162,7 @@ public partial class PlayerMovement : Component
 
 		Velocity += BaseVelocity;
 
-		Velocity += PhysicsShadowVelocity;
+		Velocity += PhysicsBodyVelocity;
 
 		var mover = new CharacterControllerHelper( BuildTrace( pos, pos ), pos, Velocity );
 		mover.Bounce = Bounciness;
@@ -178,7 +180,7 @@ public partial class PlayerMovement : Component
 		WorldPosition = mover.Position;
 		Velocity = mover.Velocity;
 		Velocity -= BaseVelocity;
-		Velocity -= PhysicsShadowVelocity;
+		Velocity -= PhysicsBodyVelocity;
 
 		Velocity /= WorldScale;
 	}
@@ -186,12 +188,13 @@ public partial class PlayerMovement : Component
 	void CategorizePosition()
 	{
 		var Position = WorldPosition;
+		var stickToGround = true;
 		var point = Position + ((Vector3.Down * 2f) * WorldScale.z);
 		var vBumpOrigin = Position;
 		var wasOnGround = IsOnGround;
 
 		// We're flying upwards too fast, never land on ground
-		if ( !IsOnGround && Velocity.z > 140.0f )
+		if ( Velocity.z + PhysicsBodyVelocity.z > 140.0f )
 		{
 			ClearGround();
 			return;
@@ -215,10 +218,12 @@ public partial class PlayerMovement : Component
 		//
 		ChangeGround( pm.GameObject, pm.Shape?.Collider as Collider );
 
+		var posDelta = (WorldPosition - PreviousPosition);
+
 		//
 		// move to this ground position, if we moved, and hit
 		//
-		if ( wasOnGround && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f )
+		if ( stickToGround && wasOnGround && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f && (WorldPosition - PreviousPosition).z <= 3f )
 		{
 			WorldPosition = pm.EndPosition;
 		}
@@ -235,8 +240,11 @@ public partial class PlayerMovement : Component
 
 	public void ClearGround()
 	{
-		if ( GroundObject != null )
+		if ( IsOnGround )
 		{
+			Velocity += PhysicsBodyVelocity;
+			PhysicsBodyVelocity = Vector3.Zero;
+			PhysicsBodyRigidbody.Velocity = Vector3.Zero;
 			PreviousGroundObject = GroundObject;
 		}
 
@@ -251,7 +259,8 @@ public partial class PlayerMovement : Component
 		IsOnGround = true;
 		GroundObject = gameObject;
 		GroundCollider = collider;
-		BaseVelocity = collider.SurfaceVelocity * collider.WorldRotation;
+		if ( collider.IsValid() ) BaseVelocity = collider.SurfaceVelocity * collider.WorldRotation;
+		else BaseVelocity = Vector3.Zero;
 	}
 
 	/// <summary>
@@ -317,20 +326,21 @@ public partial class PlayerMovement : Component
 		for ( int i = 0; i < AttemptsPerTick; i++ )
 		{
 
-			// First try the up direction for moving platforms
-			if ( i == 0 )
+			// First try the where ever the physics body is, if we have one.
+			if ( i <= 1 && PhysicsBodyRigidbody.IsValid() )
 			{
-				pos = WorldPosition + Vector3.Up * 0.5f;
+				pos = PhysicsBodyRigidbody.WorldPosition + ((PhysicsBodyRigidbody.Velocity * Time.Delta) * i);
+				if ( debug_playermovement_unstick ) DebugOverlay.Box( BoundingBox, Color.Cyan, 2, Transform.World.WithRotation( Rotation.Identity ) );
 			}
 			// Try base velocity
-			else if ( PhysicsShadowVelocity.Length > 0 && i < 80 )
+			else if ( PhysicsBodyVelocity.Length > 0 && i < 80 )
 			{
-				normal = PhysicsShadowVelocity.Normal * Time.Delta;
+				normal = PhysicsBodyVelocity.Normal * Time.Delta;
 				normal.z = Math.Max( 0, normal.z );
 				normal *= 0.8f;
-				if ( i == 1 )
+				if ( i == 2 )
 				{
-					pos = WorldPosition + normal;
+					pos = PhysicsBodyRigidbody.WorldPosition + normal;
 				}
 				else
 				{
@@ -355,10 +365,20 @@ public partial class PlayerMovement : Component
 					Gizmo.Draw.LineBBox( BoundingBox );
 				}*/
 			}
+			// Second try the up direction for moving platforms
+			else if ( i < 4 )
+			{
+				pos = WorldPosition + Vector3.Up * ((i) * 3f);
+				if ( debug_playermovement_unstick ) DebugOverlay.Box( BoundingBox, Color.Yellow, 2, Transform.World.WithRotation( Rotation.Identity ) );
+			}
 			else
 			{
+				normal = Vector3.Random.Normal * (((float)_stuckTries) * 1.25f);
 				if ( debug_playermovement_unstick ) DebugOverlay.Line( WorldPosition, pos, Color.Blue, 2 );
-				pos = WorldPosition + Vector3.Random.Normal * (((float)_stuckTries) * 1.25f);
+				pos = WorldPosition + normal;
+				normal *= 0.25f;
+				//normal.ClampLength( 0, 10 );
+				if ( debug_playermovement_unstick ) DebugOverlay.Box( BoundingBox, Color.Magenta, 2, Transform.World.WithRotation( Rotation.Identity ) );
 			}
 			/*using ( Gizmo.Scope( "unstuck4", new Transform() ) )
 			{

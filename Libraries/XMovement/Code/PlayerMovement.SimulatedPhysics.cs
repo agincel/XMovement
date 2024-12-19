@@ -5,7 +5,7 @@ namespace XMovement;
 public partial class PlayerMovement : Component
 {
 	[Sync]
-	public Vector3 PhysicsShadowVelocity { get; set; }
+	public Vector3 PhysicsBodyVelocity { get; set; }
 
 	[ConVar] public static bool debug_playermovement { get; set; } = false;
 	[Property, FeatureEnabled( "Physics Integration" )] public bool PhysicsIntegration { get; set; } = true;
@@ -45,6 +45,8 @@ public partial class PlayerMovement : Component
 
 		PhysicsBodyRigidbody = body.Components.GetOrCreate<Rigidbody>();
 		PhysicsBodyRigidbody.MassOverride = Mass;
+		PhysicsBodyRigidbody.MassCenterOverride = Vector3.Zero;
+		PhysicsBodyRigidbody.OverrideMassCenter = true;
 		PhysicsBodyRigidbody.Gravity = false;
 		PhysicsBodyRigidbody.Locking = new PhysicsLock() { Pitch = true, Roll = true };
 		PhysicsBodyRigidbody.RigidbodyFlags = RigidbodyFlags.DisableCollisionSounds;
@@ -68,7 +70,7 @@ public partial class PlayerMovement : Component
 		shadow.NetworkSpawn();
 		body.NetworkSpawn();
 	}
-	void UpdateSimulatedShadow()
+	void ResetSimulatedShadow()
 	{
 		if ( IsProxy ) return;
 		if ( !PhysicsIntegration ) return;
@@ -90,27 +92,22 @@ public partial class PlayerMovement : Component
 		PhysicsBodyCollider.Scale = BoundingBox.Maxs + BoundingBox.Mins.Abs();
 		PhysicsBodyCollider.Center = BoundingBox.Center;
 
+
 		if ( debug_playermovement ) DebugOverlay.Box( PhysicsShadowRigidbody.PhysicsBody.GetBounds(), Color.Blue, 1 );
 		if ( debug_playermovement ) DebugOverlay.Box( PhysicsBodyRigidbody.PhysicsBody.GetBounds(), Color.Green, 1 );
 	}
-	void ResetSimulatedShadow()
+	void UpdateFromSimulatedShadow()
 	{
 		if ( !PhysicsIntegration ) return;
 		if ( !PhysicsBodyRigidbody.IsValid() ) return;
 		if ( !PhysicsShadowRigidbody.IsValid() ) return;
 		if ( !PhysicsBodyRigidbody.Enabled ) return;
 		if ( !PhysicsShadowRigidbody.Enabled ) return;
+
 		// We do this so we don't slide down things and off ledges on static geometry or as soon as we land.
-		bool OnDynamicGeometry = true;
-		if ( (GroundObject.IsValid() &&
-			(
-			GroundObject.Components.TryGet<MapCollider>( out var mapCollider ) ||
-			GroundObject.Components.TryGet<Collider>( out var col ) && col.Static
-			)
-			&& !IsStuck())
-			|| !GroundObject.IsValid() )
+		bool OnDynamicGeometry = IsOnDynamicGeometry();
+		if ( !OnDynamicGeometry )
 		{
-			OnDynamicGeometry = false;
 			PhysicsBodyRigidbody.AngularVelocity = Vector3.Zero;
 			PhysicsBodyRigidbody.LocalRotation = Rotation.Identity;
 		}
@@ -120,25 +117,26 @@ public partial class PlayerMovement : Component
 
 		if ( IsStuck() )
 		{
-			vel.z = MathF.Max( 0, vel.z );
-			WorldPosition += vel * Time.Delta;
+			//vel.z = MathF.Max( 0, vel.z );
+			//WorldPosition += vel * Time.Delta;
 		}
 		else
 		{
-			PhysicsShadowVelocity = vel;// * Time.Delta;   
+			PhysicsBodyVelocity = vel;// * Time.Delta;   
 		}
 		if ( IsStuck() && PhysicsBodyRigidbody.WorldPosition != Vector3.Zero )
 		{
 			WorldPosition = PhysicsBodyRigidbody.WorldPosition;
 		}
+
 		TryUnstuck();
 
-		if ( GroundObject == null && PreviouslyOnGround )
-		{
-			PhysicsShadowVelocity = Vector3.Zero;
-			PhysicsBodyRigidbody.Velocity = Vector3.Zero;
-			Velocity += vel;
-		}
+		//if ( GroundObject == null && PreviouslyOnGround )
+		//{
+		//	PhysicsShadowVelocity = Vector3.Zero;
+		//	PhysicsBodyRigidbody.Velocity = Vector3.Zero;
+		//	Velocity += vel;
+		//}
 
 		if ( OnDynamicGeometry )
 		{
@@ -148,32 +146,70 @@ public partial class PlayerMovement : Component
 			var axis = a.WithX( 0 ).WithY( 0 );
 
 			var length = axis.Length;
+
 			if ( MovementFrequency == MovementFrequencyMode.PerFixedUpdate ) length *= Time.Delta;
 			if ( MovementFrequency == MovementFrequencyMode.PerUpdate ) length *= 1f;
-
-			GameObject.WorldRotation = GameObject.WorldRotation.RotateAroundAxis( axis.Normal, length );
-			GameObject.WorldRotation = GameObject.WorldRotation.RotateAroundAxis( Vector3.Up, PhysicsBodyRigidbody.WorldRotation.Angles().yaw );
+			if ( length > 0 && length < 1 )
+			{
+				GameObject.WorldRotation = GameObject.WorldRotation.RotateAroundAxis( axis.Normal, length );
+				GameObject.WorldRotation = GameObject.WorldRotation.RotateAroundAxis( Vector3.Up, PhysicsBodyRigidbody.WorldRotation.Angles().yaw );
+			}
 		}
 
+		PhysicsBodyRigidbody.AngularVelocity = Vector3.Zero;
+		PhysicsShadowRigidbody.AngularVelocity = Vector3.Zero;
+
+		if ( OnDynamicGeometry )
+		{
+			PhysicsBodyRigidbody.Velocity -= Gravity * Time.Delta * 1f;
+		}
+		else if ( !IsStuck() && IsOnGround )
+		{
+			// we need "friction" here since we've got no gravity pulling us down, else we will keep sliding once pushed.
+			PhysicsBodyRigidbody.Velocity = ApplyFriction( PhysicsBodyRigidbody.Velocity, GetFriction() * 1f, 0f );
+		}
+
+		// If we're on static ground, we want to stay on that ground, so lock moving up.
+		var locking = PhysicsBodyRigidbody.Locking;
+		locking.Z = IsOnGround && !OnDynamicGeometry;
+		locking.Yaw = IsOnGround && !OnDynamicGeometry;
+		PhysicsBodyRigidbody.Locking = locking;
+
+		PreviouslyOnGround = GroundObject != null;
+		ResetPhysSimPosition();
+		ResetPhysSimVelocity();
+	}
+
+	bool IsOnDynamicGeometry()
+	{
+		bool onDynamicGeometry = true;
+		if ( (GroundObject.IsValid() &&
+		(
+		GroundObject.Components.TryGet<MapCollider>( out var mapCollider ) ||
+		GroundObject.Components.TryGet<Collider>( out var col ) && col.Static
+		)
+		)
+		|| !GroundObject.IsValid() )
+		{
+			onDynamicGeometry = false;
+		}
+		return onDynamicGeometry;
+	}
+
+	void ResetPhysSimVelocity()
+	{
+		PhysicsShadowRigidbody.AngularVelocity = Vector3.Zero;
+		PhysicsShadowRigidbody.Velocity = Vector3.Zero;
+
+		PhysicsBodyRigidbody.AngularVelocity = Vector3.Zero;
+		//PhysicsBodyRigidbody.Velocity = Vector3.Zero;
+	}
+	void ResetPhysSimPosition()
+	{
 		PhysicsShadowRigidbody.LocalPosition = Vector3.Zero;
 		PhysicsShadowRigidbody.WorldRotation = Rotation.Identity;
-		PhysicsShadowRigidbody.Velocity = Vector3.Zero;
-		PhysicsShadowRigidbody.AngularVelocity = Vector3.Zero;
 
 		PhysicsBodyRigidbody.LocalPosition = Vector3.Zero;
 		PhysicsBodyRigidbody.WorldRotation = Rotation.Identity;
-		//PhysicsBodyRigidbody.Velocity = Vector3.Zero;
-		if ( OnDynamicGeometry )
-		{
-			PhysicsBodyRigidbody.Velocity -= Gravity * Time.Delta * 0.5f;
-		}
-		else if ( !IsStuck() )
-		{
-			// we need "friction" here since we've got no gravity pulling us down, else we will keep sliding once pushed.
-			PhysicsBodyRigidbody.Velocity = ApplyFriction( PhysicsBodyRigidbody.Velocity, GetFriction() * 1f, 140f );
-		}
-		PhysicsBodyRigidbody.AngularVelocity = Vector3.Zero;
-
-		PreviouslyOnGround = GroundObject != null;
 	}
 }
