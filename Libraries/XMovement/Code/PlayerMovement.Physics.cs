@@ -327,25 +327,32 @@ public partial class PlayerMovement : Component
 		{
 
 			// First try the where ever the physics body is, if we have one.
-			if ( i <= 1 && PhysicsBodyRigidbody.IsValid() )
+			/*if ( i <= 1 && PhysicsBodyRigidbody.IsValid() )
 			{
 				pos = PhysicsBodyRigidbody.WorldPosition + ((PhysicsBodyRigidbody.Velocity * Time.Delta) * i);
 				if ( debug_playermovement_unstick ) DebugOverlay.Box( BoundingBox, Color.Cyan, 2, Transform.World.WithRotation( Rotation.Identity ) );
+			}*/
+
+			// this can solve so many issues super quickly so do this first.
+			if ( i <= 2 )
+			{
+				pos = WorldPosition + Vector3.Up * ((i) * 0.5f);
+				if ( debug_playermovement_unstick ) DebugOverlay.Box( BoundingBox, Color.Cyan, 2, Transform.World.WithRotation( Rotation.Identity ) );
 			}
-			// Try base velocity
-			else if ( PhysicsBodyVelocity.Length > 0 && i < 80 )
+			// Try base velocity 
+			if ( (PhysicsBodyVelocity.Length > 0 || (PhysicsBodyRigidbody.IsValid() && PhysicsBodyRigidbody.WorldPosition != WorldPosition)) && i < 80 )
 			{
 				normal = PhysicsBodyVelocity.Normal * Time.Delta;
 				normal.z = Math.Max( 0, normal.z );
-				normal *= 0.8f;
-				if ( i == 2 )
+				normal *= 1f;
+				if ( i < 0 )
 				{
-					pos = PhysicsBodyRigidbody.WorldPosition + normal;
+					pos = PhysicsBodyRigidbody.WorldPosition;
 				}
 				else
 				{
-					var searchdistance = 1f;
-					if ( i > 70 ) searchdistance = 2f;
+					var searchdistance = 0.2f;
+					if ( i > 70 ) searchdistance = 1f;
 					if ( i > 75 ) searchdistance = 3f;
 					normal *= searchdistance;
 					pos += normal;

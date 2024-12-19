@@ -116,18 +116,24 @@ public partial class PlayerMovement : Component
 		//if ( DoGravity ) PhysicsBodyRigidbody.Velocity += Gravity * Time.Delta * 0.5f;
 		var vel = PhysicsBodyRigidbody.Velocity;
 
-		if ( IsStuck() )
+		/*if ( IsStuck() )
 		{
 			//vel.z = MathF.Max( 0, vel.z );
 			//WorldPosition += vel * Time.Delta;
+		}*/
+		if ( IsStuck() && PhysicsBodyRigidbody.WorldPosition != Vector3.Zero )
+		{
+			// If we're stuck, assume the physics simulated body is where we should be.
+			var stuckpos = WorldPosition;
+			var bodypos = PhysicsBodyRigidbody.WorldPosition;
+			var delta = bodypos - stuckpos;
+			WorldPosition = bodypos;// IsOnGround && !OnDynamicGeometry ? bodypos.WithZ( WorldPosition.z ) : bodypos;
+									//MoveTo( bodypos, true );
+			PhysicsBodyVelocity = delta;
 		}
 		else
 		{
 			PhysicsBodyVelocity = vel;// * Time.Delta;   
-		}
-		if ( IsStuck() && PhysicsBodyRigidbody.WorldPosition != Vector3.Zero )
-		{
-			WorldPosition = PhysicsBodyRigidbody.WorldPosition;
 		}
 
 		TryUnstuck();
