@@ -336,7 +336,7 @@ public partial class PlayerMovement : Component
 			// this can solve so many issues super quickly so do this first.
 			if ( i <= 2 )
 			{
-				pos = WorldPosition + Vector3.Up * ((i) * 0.5f);
+				pos = WorldPosition + Vector3.Up * ((i) * 0.2f);
 				if ( debug_playermovement_unstick ) DebugOverlay.Box( BoundingBox, Color.Cyan, 2, Transform.World.WithRotation( Rotation.Identity ) );
 			}
 			// Try base velocity 
