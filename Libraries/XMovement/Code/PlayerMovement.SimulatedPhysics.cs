@@ -4,6 +4,9 @@ using System;
 namespace XMovement;
 public partial class PlayerMovement : Component
 {
+	[Sync]
+	public Vector3 PhysicsShadowVelocity { get; set; }
+
 	[ConVar] public static bool debug_playermovement { get; set; } = false;
 	[Property, FeatureEnabled( "Physics Integration" )] public bool PhysicsIntegration { get; set; } = true;
 	[Property, Feature( "Physics Integration" )] public float Mass { get; set; } = 85;
@@ -122,7 +125,7 @@ public partial class PlayerMovement : Component
 		}
 		else
 		{
-			BaseVelocity = vel;// * Time.Delta;   
+			PhysicsShadowVelocity = vel;// * Time.Delta;   
 		}
 		if ( IsStuck() && PhysicsBodyRigidbody.WorldPosition != Vector3.Zero )
 		{
@@ -132,7 +135,7 @@ public partial class PlayerMovement : Component
 
 		if ( GroundObject == null && PreviouslyOnGround )
 		{
-			BaseVelocity = Vector3.Zero;
+			PhysicsShadowVelocity = Vector3.Zero;
 			PhysicsBodyRigidbody.Velocity = Vector3.Zero;
 			Velocity += vel;
 		}

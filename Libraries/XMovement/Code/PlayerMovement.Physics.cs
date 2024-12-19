@@ -36,13 +36,13 @@ public partial class PlayerMovement : Component
 
 	public BBox BoundingBox => new BBox( new Vector3( -Radius, -Radius, 0 ), new Vector3( Radius, Radius, Height ) );
 
-	[Sync]
+	[ReadOnly, Property, Sync]
 	public Vector3 Velocity { get; set; }
 
-	[Sync]
+	[ReadOnly, Property, Sync]
 	public Vector3 BaseVelocity { get; set; }
 
-	[Sync]
+	[ReadOnly, Property, Sync]
 	public bool IsOnGround { get; set; }
 
 	public GameObject GroundObject { get; set; }
@@ -160,6 +160,8 @@ public partial class PlayerMovement : Component
 
 		Velocity += BaseVelocity;
 
+		Velocity += PhysicsShadowVelocity;
+
 		var mover = new CharacterControllerHelper( BuildTrace( pos, pos ), pos, Velocity );
 		mover.Bounce = Bounciness;
 		mover.MaxStandableAngle = GroundAngle;
@@ -176,6 +178,7 @@ public partial class PlayerMovement : Component
 		WorldPosition = mover.Position;
 		Velocity = mover.Velocity;
 		Velocity -= BaseVelocity;
+		Velocity -= PhysicsShadowVelocity;
 
 		Velocity /= WorldScale;
 	}
@@ -210,11 +213,7 @@ public partial class PlayerMovement : Component
 		//
 		// we are on ground
 		//
-		PreviousGroundObject = GroundObject;
-
-		IsOnGround = true;
-		GroundObject = pm.GameObject;
-		GroundCollider = pm.Shape?.Collider as Collider;
+		ChangeGround( pm.GameObject, pm.Shape?.Collider as Collider );
 
 		//
 		// move to this ground position, if we moved, and hit
@@ -236,10 +235,23 @@ public partial class PlayerMovement : Component
 
 	public void ClearGround()
 	{
-		PreviousGroundObject = GroundObject;
+		if ( GroundObject != null )
+		{
+			PreviousGroundObject = GroundObject;
+		}
+
 		IsOnGround = false;
 		GroundObject = default;
 		GroundCollider = default;
+	}
+
+	public void ChangeGround( GameObject gameObject, Collider collider )
+	{
+		PreviousGroundObject = GroundObject;
+		IsOnGround = true;
+		GroundObject = gameObject;
+		GroundCollider = collider;
+		BaseVelocity = collider.SurfaceVelocity * collider.WorldRotation;
 	}
 
 	/// <summary>
@@ -311,9 +323,9 @@ public partial class PlayerMovement : Component
 				pos = WorldPosition + Vector3.Up * 0.5f;
 			}
 			// Try base velocity
-			else if ( BaseVelocity.Length > 0 && i < 80 )
+			else if ( PhysicsShadowVelocity.Length > 0 && i < 80 )
 			{
-				normal = BaseVelocity.Normal * Time.Delta;
+				normal = PhysicsShadowVelocity.Normal * Time.Delta;
 				normal.z = Math.Max( 0, normal.z );
 				normal *= 0.8f;
 				if ( i == 1 )
