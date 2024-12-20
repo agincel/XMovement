@@ -47,9 +47,11 @@ public partial class PlayerMovement : Component
 
 	public Vector3 PreviousPosition { get; set; }
 
-	public GameObject GroundObject { get; set; }
 	public GameObject PreviousGroundObject { get; set; }
+	public GameObject GroundObject { get; set; }
 	public Collider GroundCollider { get; set; }
+	public Vector3 GroundNormal { get; set; }
+	public float SurfaceFriction { get; set; } = 1.0f;
 
 	protected override void DrawGizmos()
 	{
@@ -72,7 +74,41 @@ public partial class PlayerMovement : Component
 	/// </summary>
 	public void Accelerate( Vector3 vector )
 	{
-		Velocity = Velocity.WithAcceleration( vector, Acceleration * Time.Delta );
+		//Velocity = Velocity.WithAcceleration( vector, Acceleration * Time.Delta );
+		Accelerate( vector, Acceleration );
+	}
+
+	/// <summary>
+	/// Add our wish direction and speed onto our velocity
+	/// </summary>
+	public virtual void Accelerate( Vector3 vector, float acceleration )
+	{
+		// This gets overridden because some games (CSPort) want to allow dead (observer) players
+		// to be able to move around.
+		// if ( !CanAccelerate() )
+		//     return; 
+
+		var wishdir = vector.Normal;
+		var wishspeed = vector.Length;
+
+		// See if we are changing direction a bit
+		var currentspeed = Velocity.Dot( wishdir );
+
+		// Reduce wishspeed by the amount of veer.
+		var addspeed = wishspeed - currentspeed;
+
+		// If not going to add any speed, done.
+		if ( addspeed <= 0 )
+			return;
+
+		// Determine amount of acceleration.
+		var accelspeed = acceleration * wishspeed * Time.Delta * SurfaceFriction;
+
+		// Cap at addspeed
+		if ( accelspeed > addspeed )
+			accelspeed = addspeed;
+
+		Velocity += wishdir * accelspeed;
 	}
 
 	/// <summary>
@@ -188,10 +224,9 @@ public partial class PlayerMovement : Component
 	void CategorizePosition()
 	{
 		var Position = WorldPosition;
-		var stickToGround = true;
 		var point = Position + ((Vector3.Down * 2f) * WorldScale.z);
 		var vBumpOrigin = Position;
-		var wasOnGround = IsOnGround;
+		var moveToEndPos = IsOnGround;
 
 		// We're flying upwards too fast, never land on ground
 		if ( Velocity.z + PhysicsBodyVelocity.z > 140.0f )
@@ -207,23 +242,28 @@ public partial class PlayerMovement : Component
 		//
 		// we didn't hit - or the ground is too steep to be ground
 		//
+
 		if ( !pm.Hit || Vector3.GetAngle( Vector3.Up, pm.Normal ) > GroundAngle )
 		{
 			ClearGround();
+
+			if ( Velocity.z > 0 )
+				SurfaceFriction = 0.25f;
+
 			return;
 		}
 
 		//
 		// we are on ground
 		//
-		ChangeGround( pm.GameObject, pm.Shape?.Collider as Collider );
+		ChangeGround( pm.GameObject, pm.Shape?.Collider as Collider, pm.Normal );
 
 		var posDelta = (WorldPosition - PreviousPosition);
 
 		//
 		// move to this ground position, if we moved, and hit
 		//
-		if ( stickToGround && wasOnGround && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f && (WorldPosition - PreviousPosition).z <= 3f )
+		if ( moveToEndPos && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f && posDelta.z <= 3f )
 		{
 			WorldPosition = pm.EndPosition;
 		}
@@ -238,7 +278,10 @@ public partial class PlayerMovement : Component
 		Velocity += amount;
 	}
 
-	public void ClearGround()
+	/// <summary>
+	/// We're no longer on the ground, remove it
+	/// </summary>
+	public virtual void ClearGround()
 	{
 		if ( IsOnGround )
 		{
@@ -251,16 +294,34 @@ public partial class PlayerMovement : Component
 		IsOnGround = false;
 		GroundObject = default;
 		GroundCollider = default;
+		GroundNormal = Vector3.Up;
+		SurfaceFriction = 1.0f;
 	}
 
-	public void ChangeGround( GameObject gameObject, Collider collider )
+	/// <summary>
+	/// We have a new ground
+	/// </summary>
+	public virtual void ChangeGround( GameObject gameObject, Collider collider, Vector3 normal )
 	{
 		PreviousGroundObject = GroundObject;
 		IsOnGround = true;
 		GroundObject = gameObject;
 		GroundCollider = collider;
-		if ( collider.IsValid() ) BaseVelocity = collider.SurfaceVelocity * collider.WorldRotation;
-		else BaseVelocity = Vector3.Zero;
+		GroundNormal = normal;
+		if ( collider.IsValid() )
+		{
+			BaseVelocity = collider.SurfaceVelocity * collider.WorldRotation;
+			// VALVE HACKHACK: Scale this to fudge the relationship between vphysics friction values and player friction values.
+			// A value of 0.8f feels pretty normal for vphysics, whereas 1.0f is normal for players.
+			// This scaling trivially makes them equivalent.  REVISIT if this affects low friction surfaces too much.
+			SurfaceFriction = collider?.Surface?.Friction ?? 0.8f * 1.25f;
+			if ( SurfaceFriction > 1 ) SurfaceFriction = 1;
+		}
+		else
+		{
+			BaseVelocity = Vector3.Zero;
+			SurfaceFriction = 1;
+		}
 	}
 
 	/// <summary>

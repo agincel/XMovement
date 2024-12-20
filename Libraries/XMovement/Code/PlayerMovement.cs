@@ -46,19 +46,28 @@ public partial class PlayerMovement : Component
 	/// </summary>
 	public void Move( bool withWishVelocity = true, bool withGravity = true, float frictionOverride = 0 )
 	{
+		RestoreGroundPos();
 		ApplyAcceleration();
+
+		// Start gravity
+		if ( !IsOnGround && withGravity )
+			Velocity -= Gravity * Time.Delta * 0.5f;
 
 		if ( withWishVelocity )
 		{
 			if ( IsOnGround )
 			{
-				Accelerate( WishVelocity );
+				Accelerate( WishVelocity, BaseAcceleration );
 			}
 			else
 			{
-				Accelerate( WishVelocity.ClampLength( AirControl ) );
+				Accelerate( WishVelocity.ClampLength( AirControl ), AirAcceleration );
 			}
 		}
+
+		// Finish gravity
+		if ( !IsOnGround && withGravity )
+			Velocity -= Gravity * Time.Delta * 0.5f;
 
 		if ( frictionOverride > 0 )
 		{
@@ -68,9 +77,6 @@ public partial class PlayerMovement : Component
 		{
 			Velocity = ApplyFriction( Velocity, GetFriction(), 100 );
 		}
-
-		if ( !IsOnGround && withGravity )
-			Velocity -= Gravity * Time.Delta * 1f;
 
 		if ( TryUnstuck() )
 			return;
@@ -86,6 +92,7 @@ public partial class PlayerMovement : Component
 
 		CategorizePosition();
 		ResetSimulatedShadow();
+		SaveGroundPos();
 		PreviousPosition = WorldPosition;
 	}
 
