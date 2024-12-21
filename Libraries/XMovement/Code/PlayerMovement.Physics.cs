@@ -288,9 +288,9 @@ public partial class PlayerMovement : Component
 			Velocity += PhysicsBodyVelocity;
 			PhysicsBodyVelocity = Vector3.Zero;
 			PhysicsBodyRigidbody.Velocity = Vector3.Zero;
-			PreviousGroundObject = GroundObject;
 		}
 
+		PreviousGroundObject = GroundObject;
 		IsOnGround = false;
 		GroundObject = default;
 		GroundCollider = default;
