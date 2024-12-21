@@ -15,6 +15,11 @@ public partial class PlayerMovement : Component
 	[Property, Group( "Friction" )] public float BaseFriction { get; set; } = 4.0f;
 
 	/// <summary>
+	/// The speed at which we fully come to a stop.
+	/// </summary>
+	[Property, Group( "Friction" )] public float StopSpeed { get; set; } = 100.0f;
+
+	/// <summary>
 	/// Can we control our movement in the air?
 	/// </summary>
 	[Property, Group( "Config" )] public float AirControl { get; set; } = 30f;
@@ -71,11 +76,11 @@ public partial class PlayerMovement : Component
 
 		if ( frictionOverride > 0 )
 		{
-			Velocity = ApplyFriction( Velocity, frictionOverride, 100 );
+			Velocity = ApplyFriction( Velocity, frictionOverride, StopSpeed );
 		}
 		else
 		{
-			Velocity = ApplyFriction( Velocity, GetFriction(), 100 );
+			Velocity = ApplyFriction( Velocity, GetFriction(), StopSpeed );
 		}
 
 		if ( TryUnstuck() )

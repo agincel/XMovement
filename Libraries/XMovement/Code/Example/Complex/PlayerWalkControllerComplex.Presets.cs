@@ -20,6 +20,7 @@ public partial class PlayerWalkControllerComplex : Component
 			case MovementPresets.HalfLife:
 				Controller.Gravity = new Vector3( 0, 0, 800 );
 				Controller.BaseFriction = 4f;
+				Controller.StopSpeed = 100f;
 				Controller.BaseAcceleration = 10f;
 				Controller.AirAcceleration = 10f;
 
@@ -37,6 +38,7 @@ public partial class PlayerWalkControllerComplex : Component
 			case MovementPresets.HalfLife2:
 				Controller.Gravity = new Vector3( 0, 0, 600 );
 				Controller.BaseFriction = 4f;
+				Controller.StopSpeed = 100f;
 				Controller.BaseAcceleration = 10f;
 				Controller.AirAcceleration = 10f;
 
@@ -55,6 +57,7 @@ public partial class PlayerWalkControllerComplex : Component
 			case MovementPresets.CounterStrikeSource:
 				Controller.Gravity = new Vector3( 0, 0, 800 );
 				Controller.BaseFriction = 4f;
+				Controller.StopSpeed = 100f;
 				Controller.BaseAcceleration = 10f;
 				Controller.AirAcceleration = 10f;
 
@@ -71,7 +74,8 @@ public partial class PlayerWalkControllerComplex : Component
 				break;
 			case MovementPresets.TroubleInTerroristTown:
 				Controller.Gravity = new Vector3( 0, 0, 800 );
-				Controller.BaseFriction = 4f;
+				Controller.BaseFriction = 8f;
+				Controller.StopSpeed = 10f;
 				Controller.BaseAcceleration = 10f;
 				Controller.AirAcceleration = 50f;
 

@@ -223,9 +223,8 @@ public partial class PlayerMovement : Component
 
 	void CategorizePosition()
 	{
-		var Position = WorldPosition;
-		var point = Position + ((Vector3.Down * 2f) * WorldScale.z);
-		var vBumpOrigin = Position;
+		var point = WorldPosition + ((Vector3.Down * 2f) * WorldScale.z);
+		var vBumpOrigin = WorldPosition;
 		var moveToEndPos = IsOnGround;
 
 		// We're flying upwards too fast, never land on ground
