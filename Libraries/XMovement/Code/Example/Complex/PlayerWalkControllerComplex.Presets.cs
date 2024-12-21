@@ -73,6 +73,24 @@ public partial class PlayerWalkControllerComplex : Component
 				JumpPower = 268.3281572999747f;
 				break;
 			case MovementPresets.TroubleInTerroristTown:
+				Controller.Gravity = new Vector3( 0, 0, 600 );
+				Controller.BaseFriction = 8f;
+				Controller.StopSpeed = 10f;
+				Controller.BaseAcceleration = 10f;
+				Controller.AirAcceleration = 50f;
+
+				EnableWalking = false;
+
+				DefaultSpeed = 120f;
+
+				RunByDefault = true;
+				RunSpeed = 220f;
+
+				CrouchSpeed = 66f;
+
+				JumpPower = 160;
+				break;
+			case MovementPresets.ThreeThievesTroubleInTerroristTown:
 				Controller.Gravity = new Vector3( 0, 0, 800 );
 				Controller.BaseFriction = 8f;
 				Controller.StopSpeed = 10f;
@@ -86,7 +104,7 @@ public partial class PlayerWalkControllerComplex : Component
 				RunByDefault = true;
 				RunSpeed = 220f;
 
-				CrouchSpeed = 80f;
+				CrouchSpeed = 66f;
 
 				JumpPower = 268.3281572999747f;
 				break;
@@ -101,6 +119,7 @@ public partial class PlayerWalkControllerComplex : Component
 		[Title( "Half-Life 2" )] HalfLife2,
 		[Title( "Counter-Strike: Source" )] CounterStrikeSource,
 		[Title( "Trouble in Terrorist Town!" )] TroubleInTerroristTown,
+		[Title( "Three Thieves: Trouble in Terrorist Town!" )] ThreeThievesTroubleInTerroristTown,
 	}
 }
 
