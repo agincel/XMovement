@@ -41,6 +41,7 @@ public partial class PlayerWalkControllerComplex : Component
 			cameraobj.Name = "Camera";
 			Camera = cameraobj.AddComponent<CameraComponent>();
 			Camera.Enabled = false;
+			Camera.TargetEye = StereoTargetEye.Both;
 		}
 		if ( CameraMode == CameraModes.FirstPerson )
 		{

@@ -120,8 +120,8 @@ public partial class PlayerWalkControllerComplex : Component
 
 	private void BuildFrameInput()
 	{
-		if ( AllowPogosticking && Input.Down( JumpAction ) ) WantsJump = true;
-		else if ( Input.Pressed( JumpAction ) ) WantsJump = true;
+		if ( AllowPogosticking && Input.Down( JumpAction ) || (IsInVR && Input.VR.RightHand.ButtonA.IsPressed) ) WantsJump = true;
+		else if ( Input.Pressed( JumpAction ) || (IsInVR && Input.VR.RightHand.ButtonA.Delta) ) WantsJump = true;
 	}
 	private void ResetFrameInput()
 	{
@@ -129,13 +129,17 @@ public partial class PlayerWalkControllerComplex : Component
 	}
 	private void BuildInput()
 	{
-		if ( RunByDefault )
-			IsRunning = !Input.Down( RunAction ) && EnableRunning;
-		else
-			IsRunning = Input.Down( RunAction ) && EnableRunning;
+		var run = Input.Down( RunAction ) || (IsInVR && Input.VR.LeftHand.ButtonA);
+		var walk = Input.Down( WalkAction );
+		var crouch = Input.Down( CrouchAction ) || (IsInVR && Input.VR.LeftHand.JoystickPress.IsPressed);
 
-		IsWalking = Input.Down( WalkAction ) && EnableWalking;
-		IsCrouching = Input.Down( CrouchAction ) || !CanUncrouch();
+		if ( RunByDefault )
+			IsRunning = !run && EnableRunning;
+		else
+			IsRunning = run && EnableRunning;
+
+		IsWalking = walk && EnableWalking;
+		IsCrouching = crouch || !CanUncrouch();
 	}
 
 	protected float GetWishSpeed()
@@ -149,6 +153,8 @@ public partial class PlayerWalkControllerComplex : Component
 	public void BuildWishVelocity()
 	{
 		WishMove = Input.AnalogMove;
+
+		if ( IsInVR ) WishMove = new Vector3( Input.VR.LeftHand.Joystick.Value.y, -Input.VR.LeftHand.Joystick.Value.x );
 
 		var rot = EyeAngles.WithPitch( 0f ).ToRotation();
 

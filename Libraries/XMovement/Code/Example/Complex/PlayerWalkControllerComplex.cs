@@ -12,6 +12,7 @@ public partial class PlayerWalkControllerComplex : Component, Component.ExecuteI
 			SetupBody();
 			SetupHead();
 			SetupCamera();
+			SetupVR();
 		}
 	}
 

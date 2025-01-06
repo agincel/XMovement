@@ -36,6 +36,7 @@ public partial class PlayerWalkControllerComplex : Component
 	}
 	protected virtual void PositionHead()
 	{
+		if ( IsInVR ) { VRPositionHead(); return; }
 		if ( Head.IsValid() )
 		{
 			Head.WorldRotation = EyeAngles.ToRotation();
@@ -56,6 +57,11 @@ public partial class PlayerWalkControllerComplex : Component
 
 			LocalEyeAngles += Input.AnalogLook * AimSensitivityScale;
 			LocalEyeAngles = LocalEyeAngles.WithPitch( LocalEyeAngles.pitch.Clamp( -89f, 89f ) );
+
+			if ( IsInVR )
+			{
+				LocalEyeAngles = Input.VR.Head.Rotation.Angles();
+			}
 
 			// This moves our feet up when crouching in air
 			var delta = _smoothEyeHeight - LastSmoothEyeHeight;

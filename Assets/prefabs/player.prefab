@@ -3,6 +3,7 @@
     "__guid": "df0069e0-452d-42e0-af9a-a56c27398cce",
     "Flags": 0,
     "Name": "player",
+    "Position": "0,0,-1697809",
     "Enabled": true,
     "Components": [
       {
@@ -25,7 +26,7 @@
           "go": "b7cdfa62-6dc9-49e2-91e1-421dc224c648",
           "component_type": "CameraComponent"
         },
-        "CameraMode": "ThirdPerson",
+        "CameraMode": "FirstPerson",
         "CameraToggleAction": "View",
         "ClimbSpeed": 100,
         "CrouchAction": "Duck",
@@ -37,6 +38,7 @@
         "EnableNoclipping": true,
         "EnableRunning": true,
         "EnableSwimming": true,
+        "EnableVR": true,
         "EnableWalking": true,
         "FirstPersonOffset": "0,0,0",
         "Head": {
@@ -52,7 +54,7 @@
         "NoclipAction": "Noclip",
         "OnlyAllowHost": false,
         "PlayerShadowsOnly": true,
-        "RotationAngleLimit": 0,
+        "RotationAngleLimit": 45,
         "RotationFaceLadders": false,
         "RotationSpeed": 0,
         "RunAction": "Run",
@@ -77,6 +79,7 @@
         "BaseFriction": 4,
         "BaseVelocity": "0,0,0",
         "Bounciness": 0,
+        "DoClassicPlatforms": true,
         "Gravity": "0,0,800",
         "GroundAngle": 46,
         "Height": 72,
@@ -88,8 +91,9 @@
         "PushScale": 0.7,
         "Radius": 16,
         "StepHeight": 18,
+        "StopSpeed": 100,
         "UseCollisionRules": false,
-        "Velocity": "0,0,0"
+        "Velocity": "0,0,-52112"
       },
       {
         "__type": "Sandbox.Citizen.CitizenAnimationHelper",
@@ -104,6 +108,10 @@
           "go": "6d99b4fd-950b-4dfd-aac3-f44792cb1300",
           "component_type": "SkinnedModelRenderer"
         }
+      },
+      {
+        "__type": "Sandbox.VR.VRAnchor",
+        "__guid": "c7795a5f-3e61-4879-b4b3-502ce740cad0"
       }
     ],
     "Children": [
@@ -134,7 +142,7 @@
               "BloomLayer": false,
               "AfterUILayer": false
             },
-            "RenderType": "On",
+            "RenderType": "ShadowsOnly",
             "Sequence": {
               "Name": null
             },
@@ -147,14 +155,14 @@
         "__guid": "6005e47b-ec48-4df3-a7a7-f8fbf5a99579",
         "Flags": 0,
         "Name": "Head",
-        "Position": "0,0,64",
+        "Position": "-353.6772,480.0142,-144.8308",
+        "Rotation": "0.03742078,-0.3448659,-0.0360757,0.9372116",
         "Enabled": true,
         "Children": [
           {
             "__guid": "b7cdfa62-6dc9-49e2-91e1-421dc224c648",
             "Flags": 0,
             "Name": "Camera",
-            "Position": "-180,0,0",
             "Enabled": true,
             "Components": [
               {
@@ -170,12 +178,94 @@
                 "Priority": 1,
                 "RenderExcludeTags": "",
                 "RenderTags": "",
-                "TargetEye": "None",
+                "TargetEye": "Both",
                 "Viewport": "0,0,1,1",
                 "ZFar": 10000,
                 "ZNear": 10
               }
             ]
+          }
+        ]
+      },
+      {
+        "__guid": "8cec35a9-7568-410b-a968-b9eea4cfde34",
+        "Flags": 0,
+        "Name": "Object",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__guid": "edb61aac-fefb-46de-9c42-02f61a970e74",
+            "BodyGroups": 18446744073709551615,
+            "CreateAttachments": false,
+            "CreateBoneObjects": false,
+            "Model": "models/hands/human_hand_left.vmdl",
+            "Morphs": {},
+            "Parameters": {
+              "bools": {},
+              "ints": {},
+              "floats": {},
+              "vectors": {},
+              "rotations": {}
+            },
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Sequence": {
+              "Name": null
+            },
+            "Tint": "1,1,1,1",
+            "UseAnimGraph": true
+          },
+          {
+            "__type": "Sandbox.VR.VRHand",
+            "__guid": "5c874702-8dfe-4fbe-a2e7-db46a87da82f",
+            "HandSource": "Left"
+          }
+        ]
+      },
+      {
+        "__guid": "daf931fd-90f2-407a-96b4-36da55bc6175",
+        "Flags": 0,
+        "Name": "Object (1)",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__guid": "06830d60-5548-4bff-aa01-a6d9f2f3e539",
+            "BodyGroups": 18446744073709551615,
+            "CreateAttachments": false,
+            "CreateBoneObjects": false,
+            "Model": "models/hands/human_hand_right.vmdl",
+            "Morphs": {},
+            "Parameters": {
+              "bools": {},
+              "ints": {},
+              "floats": {},
+              "vectors": {},
+              "rotations": {}
+            },
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Sequence": {
+              "Name": null
+            },
+            "Tint": "1,1,1,1",
+            "UseAnimGraph": true
+          },
+          {
+            "__type": "Sandbox.VR.VRHand",
+            "__guid": "07de04a2-5b8e-4e01-a643-31d872162d1f",
+            "HandSource": "Right"
           }
         ]
       }
