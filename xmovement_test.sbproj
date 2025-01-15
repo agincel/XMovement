@@ -1,7 +1,7 @@
 {
   "Title": "XMovement Test",
   "Type": "game",
-  "Org": "local",
+  "Org": "xenthio",
   "Ident": "xmovement_test",
   "Schema": 1,
   "IncludeSourceFiles": false,
@@ -22,11 +22,12 @@
     "PerMapRanking": false,
     "LeaderboardType": "None",
     "CsProjName": "",
-    "StartupScene": "scenes/minimal.scene",
+    "StartupScene": "scenes/rooftops.scene",
     "ControlModes": {
       "Keyboard": true,
       "VR": true,
       "Gamepad": false
-    }
+    },
+    "LaunchMode": "Normal"
   }
 }

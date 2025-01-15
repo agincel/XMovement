@@ -60,7 +60,7 @@ public partial class PlayerWalkControllerComplex : Component
 
 			if ( IsInVR )
 			{
-				LocalEyeAngles = Input.VR.Head.Rotation.Angles();
+				EyeAngles = Input.VR.Head.Rotation.Angles();
 			}
 
 			// This moves our feet up when crouching in air

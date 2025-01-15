@@ -95,6 +95,8 @@ public partial class PlayerMovement : Component
 			Move( false );
 		}
 
+		if ( IsOnGround ) StayOnGround();
+
 		CategorizePosition();
 		ResetSimulatedShadow();
 		SaveGroundPos();

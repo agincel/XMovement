@@ -6,12 +6,20 @@ public partial class PlayerWalkControllerComplex : Component
 {
 	[Property, FeatureEnabled( "VR" )] public bool EnableVR { get; set; } = false;
 	[RequireComponent] public VRAnchor Anchor { get; set; }
+	[Property] public VRTrackedObject HeadTracker { get; set; }
 	[Sync] public bool IsInVR { get; set; } = false;
 
 	private void SetupVR()
 	{
 		if ( !EnableVR ) return;
-		IsInVR = Game.IsRunningInVR;
+		IsInVR = Game.IsRunningInVR && Game.IsPlaying;
+		if ( Head.IsValid() && !HeadTracker.IsValid() )
+		{
+			HeadTracker = Head.Components.Create<VRTrackedObject>();
+			HeadTracker.PoseSource = VRTrackedObject.PoseSources.Head;
+			HeadTracker.TrackingType = VRTrackedObject.TrackingTypes.All;
+			HeadTracker.UseRelativeTransform = false;
+		}
 	}
 
 	private void UpdateVR()
@@ -21,7 +29,5 @@ public partial class PlayerWalkControllerComplex : Component
 	public virtual void VRPositionHead()
 	{
 		if ( !IsInVR ) return;
-		Camera.WorldRotation = Input.VR.Head.Rotation;
-		Camera.WorldPosition = Input.VR.Head.Position;
 	}
 }

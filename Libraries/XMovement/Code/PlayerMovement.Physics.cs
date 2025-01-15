@@ -14,7 +14,7 @@ public partial class PlayerMovement : Component
 	[Property] public float StepHeight { get; set; } = 18.0f;
 
 	[Range( 0, 90 )]
-	[Property] public float GroundAngle { get; set; } = 46.0f;
+	[Property] public float GroundAngle { get; set; } = 45.5734f;
 
 	[Range( 0, 64 )]
 	[Property] public float Acceleration { get; set; } = 10.0f;
@@ -234,7 +234,7 @@ public partial class PlayerMovement : Component
 			return;
 		}
 
-		point.z -= (IsOnGround ? StepHeight : 0.1f);
+		//point.z -= (IsOnGround && PreviousGroundObject != null ? StepHeight : 0.1f) / 32f;
 
 		var pm = BuildTrace( vBumpOrigin, point, 0.0f ).Run();
 
@@ -265,6 +265,25 @@ public partial class PlayerMovement : Component
 		if ( moveToEndPos && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f && posDelta.z <= 3f )
 		{
 			WorldPosition = pm.EndPosition;
+		}
+	}
+
+	public void StayOnGround()
+	{
+		var start = WorldPosition;
+		var end = WorldPosition;
+		start.z += 2;
+		end.z -= StepHeight;
+
+		var tr = BuildTrace( start, end, 0.0f ).Run();
+
+		//
+		// we didn't hit - or the ground is too steep to be ground
+		//
+
+		if ( tr.Fraction > 0.0f && tr.Fraction < 1.0f && !tr.StartedSolid && Vector3.GetAngle( Vector3.Up, tr.Normal ) <= GroundAngle )
+		{
+			WorldPosition = tr.EndPosition;
 		}
 	}
 
