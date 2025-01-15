@@ -74,7 +74,6 @@ public partial class PlayerMovement : Component
 	/// </summary>
 	public void Accelerate( Vector3 vector )
 	{
-		//Velocity = Velocity.WithAcceleration( vector, Acceleration * Time.Delta );
 		Accelerate( vector, Acceleration );
 	}
 
@@ -115,8 +114,10 @@ public partial class PlayerMovement : Component
 	/// Apply an amount of friction to the current velocity.
 	/// No need to scale by time delta - it will be done inside.
 	/// </summary>
-	public Vector3 ApplyFriction( Vector3 velocity, float frictionAmount, float stopSpeed = 140.0f )
+	public Vector3 ApplyFriction( Vector3 velocity, float friction, float stopSpeed = 140.0f )
 	{
+		friction *= SurfaceFriction;
+
 		var speed = velocity.Length;
 
 		// Bleed off some speed, but if we have less than the bleed
@@ -124,7 +125,7 @@ public partial class PlayerMovement : Component
 		float control = (speed < stopSpeed) ? stopSpeed : speed;
 
 		// Add the amount to the drop amount.
-		var drop = control * Time.Delta * frictionAmount;
+		var drop = control * friction * Time.Delta;
 
 		// scale the velocity
 		float newspeed = speed - drop;
@@ -223,12 +224,13 @@ public partial class PlayerMovement : Component
 
 	void CategorizePosition()
 	{
+		SurfaceFriction = 1.0f;
 		var point = WorldPosition + ((Vector3.Down * 2f) * WorldScale.z);
 		var vBumpOrigin = WorldPosition;
-		var moveToEndPos = IsOnGround;
+		var wasOnGround = IsOnGround;
 
 		// We're flying upwards too fast, never land on ground
-		if ( Velocity.z + PhysicsBodyVelocity.z > 140.0f )
+		if ( Velocity.z - PhysicsBodyVelocity.z > 140.0f )
 		{
 			ClearGround();
 			return;
@@ -242,11 +244,11 @@ public partial class PlayerMovement : Component
 		// we didn't hit - or the ground is too steep to be ground
 		//
 
-		if ( !pm.Hit || Vector3.GetAngle( Vector3.Up, pm.Normal ) > GroundAngle )
+		if ( IsOnGround && !pm.Hit || Vector3.GetAngle( Vector3.Up, pm.Normal ) > GroundAngle )
 		{
 			ClearGround();
 
-			if ( Velocity.z > 0 )
+			if ( wasOnGround && Velocity.z > 0.0f )
 				SurfaceFriction = 0.25f;
 
 			return;
@@ -255,14 +257,14 @@ public partial class PlayerMovement : Component
 		//
 		// we are on ground
 		//
-		ChangeGround( pm.GameObject, pm.Shape?.Collider as Collider, pm.Normal );
+		ChangeGround( pm );
 
 		var posDelta = (WorldPosition - PreviousPosition);
 
 		//
 		// move to this ground position, if we moved, and hit
 		//
-		if ( moveToEndPos && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f && posDelta.z <= 3f )
+		if ( wasOnGround && !pm.StartedSolid && pm.Fraction > 0.0f && pm.Fraction < 1.0f && posDelta.z <= 3f )
 		{
 			WorldPosition = pm.EndPosition;
 		}
@@ -283,7 +285,8 @@ public partial class PlayerMovement : Component
 
 		if ( tr.Fraction > 0.0f && tr.Fraction < 1.0f && !tr.StartedSolid && Vector3.GetAngle( Vector3.Up, tr.Normal ) <= GroundAngle )
 		{
-			WorldPosition = tr.EndPosition;
+			float zDelta = MathF.Abs( WorldPosition.z - tr.EndPosition.z );
+			if ( zDelta > 0.5f ) WorldPosition = tr.EndPosition;
 		}
 	}
 
@@ -319,27 +322,31 @@ public partial class PlayerMovement : Component
 	/// <summary>
 	/// We have a new ground
 	/// </summary>
-	public virtual void ChangeGround( GameObject gameObject, Collider collider, Vector3 normal )
+	public virtual void ChangeGround( SceneTraceResult pm )
 	{
 		PreviousGroundObject = GroundObject;
-		IsOnGround = true;
-		GroundObject = gameObject;
-		GroundCollider = collider;
-		GroundNormal = normal;
-		if ( collider.IsValid() )
+		IsOnGround = pm.Hit;
+		GroundObject = pm.GameObject;
+		GroundCollider = pm.Shape?.Collider as Collider;
+		GroundNormal = pm.Normal;
+
+		BaseVelocity = Vector3.Zero;
+
+		if ( pm.Hit )
 		{
-			BaseVelocity = collider.SurfaceVelocity * collider.WorldRotation;
-			// VALVE HACKHACK: Scale this to fudge the relationship between vphysics friction values and player friction values.
-			// A value of 0.8f feels pretty normal for vphysics, whereas 1.0f is normal for players.
-			// This scaling trivially makes them equivalent.  REVISIT if this affects low friction surfaces too much.
-			SurfaceFriction = collider?.Surface?.Friction ?? 0.8f * 1.25f;
-			if ( SurfaceFriction > 1 ) SurfaceFriction = 1;
+			CatergorizeGroundSurface( pm );
 		}
-		else
-		{
-			BaseVelocity = Vector3.Zero;
-			SurfaceFriction = 1;
-		}
+	}
+
+	public virtual void CatergorizeGroundSurface( SceneTraceResult pm )
+	{
+		if ( GroundCollider.IsValid() ) BaseVelocity = GroundCollider.SurfaceVelocity * GroundCollider.WorldRotation;
+
+		// VALVE HACKHACK: Scale this to fudge the relationship between vphysics friction values and player friction values.
+		// A value of 0.8f feels pretty normal for vphysics, whereas 1.0f is normal for players.
+		// This scaling trivially makes them equivalent.  REVISIT if this affects low friction surfaces too much.
+		SurfaceFriction = (pm.Surface?.Friction ?? 0.8f) * 1.25f;
+		if ( SurfaceFriction > 1.0f ) SurfaceFriction = 1.0f;
 	}
 
 	/// <summary>

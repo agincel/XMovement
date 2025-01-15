@@ -24,7 +24,7 @@ public partial class PlayerMovement : Component
 	/// </summary>
 	[Property, Group( "Config" )] public float AirControl { get; set; } = 30f;
 
-	[Property, Group( "Acceleration" )] public float AirAcceleration { get; set; } = 50f;
+	[Property, Group( "Acceleration" )] public float AirAcceleration { get; set; } = 40f;
 
 	[Property, Group( "Acceleration" )] public float BaseAcceleration { get; set; } = 10;
 	[Property] public MovementFrequencyMode MovementFrequency { get; set; } = MovementFrequencyMode.PerFixedUpdate;
@@ -70,18 +70,18 @@ public partial class PlayerMovement : Component
 			}
 		}
 
-		// Finish gravity
-		if ( !IsOnGround && withGravity )
-			Velocity -= Gravity * Time.Delta * 0.5f;
+		if ( IsOnGround )
+		{
+			if ( frictionOverride > 0 )
+			{
+				Velocity = ApplyFriction( Velocity, frictionOverride, StopSpeed );
+			}
+			else
+			{
+				Velocity = ApplyFriction( Velocity, GetFriction(), StopSpeed );
+			}
+		}
 
-		if ( frictionOverride > 0 )
-		{
-			Velocity = ApplyFriction( Velocity, frictionOverride, StopSpeed );
-		}
-		else
-		{
-			Velocity = ApplyFriction( Velocity, GetFriction(), StopSpeed );
-		}
 
 		if ( TryUnstuck() )
 			return;
@@ -98,6 +98,11 @@ public partial class PlayerMovement : Component
 		if ( IsOnGround ) StayOnGround();
 
 		CategorizePosition();
+
+		// Finish gravity
+		if ( !IsOnGround && withGravity )
+			Velocity -= Gravity * Time.Delta * 0.5f;
+
 		ResetSimulatedShadow();
 		SaveGroundPos();
 		PreviousPosition = WorldPosition;
@@ -115,7 +120,6 @@ public partial class PlayerMovement : Component
 	/// <returns></returns>
 	private float GetFriction()
 	{
-		if ( !IsOnGround ) return 0f;
 		return BaseFriction;
 	}
 }
