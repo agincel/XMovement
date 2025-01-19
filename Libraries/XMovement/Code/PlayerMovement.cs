@@ -70,16 +70,13 @@ public partial class PlayerMovement : Component
 			}
 		}
 
-		if ( IsOnGround )
+		if ( frictionOverride > 0 )
 		{
-			if ( frictionOverride > 0 )
-			{
-				Velocity = ApplyFriction( Velocity, frictionOverride, StopSpeed );
-			}
-			else
-			{
-				Velocity = ApplyFriction( Velocity, GetFriction(), StopSpeed );
-			}
+			Velocity = ApplyFriction( Velocity, frictionOverride, StopSpeed );
+		}
+		else if ( IsOnGround )
+		{
+			Velocity = ApplyFriction( Velocity, GetFriction(), StopSpeed );
 		}
 
 

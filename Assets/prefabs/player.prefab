@@ -67,7 +67,7 @@
         "PlayerShadowsOnly": true,
         "RotationAngleLimit": 45,
         "RotationFaceLadders": false,
-        "RotationSpeed": 0,
+        "RotationSpeed": 1,
         "RunAction": "Run",
         "RunByDefault": true,
         "RunSpeed": 210,
@@ -142,6 +142,42 @@
       {
         "__type": "Sandbox.VR.VRAnchor",
         "__guid": "c7795a5f-3e61-4879-b4b3-502ce740cad0",
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null
+      },
+      {
+        "__type": "Sandbox.HUD",
+        "__guid": "8e052cca-09cb-450f-b731-b897aec4f2ae",
+        "MyStringValue": "Press \u0027Reload\u0027 to respawn",
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null
+      },
+      {
+        "__type": "Sandbox.ScreenPanel",
+        "__guid": "ba9fa8df-033e-40c7-9cce-21461c203e59",
+        "AutoScreenScale": true,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "Opacity": 1,
+        "Scale": 1,
+        "ScaleStrategy": "ConsistentHeight",
+        "ZIndex": 100
+      },
+      {
+        "__type": "Respawner",
+        "__guid": "002d810d-8ba8-403d-8dfb-55e30821dd66",
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
@@ -270,7 +306,6 @@
         "__guid": "8cec35a9-7568-410b-a968-b9eea4cfde34",
         "Flags": 0,
         "Name": "Object",
-        "Enabled": true,
         "Components": [
           {
             "__type": "Sandbox.SkinnedModelRenderer",
@@ -341,7 +376,6 @@
         "__guid": "daf931fd-90f2-407a-96b4-36da55bc6175",
         "Flags": 0,
         "Name": "Object (1)",
-        "Enabled": true,
         "Components": [
           {
             "__type": "Sandbox.SkinnedModelRenderer",
